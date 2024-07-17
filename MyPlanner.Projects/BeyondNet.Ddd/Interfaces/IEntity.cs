@@ -15,7 +15,7 @@ namespace BeyondNet.Ddd.Interfaces
         int Version { get; }
 
         void AddBrokenRule(string propertyName, string message);
-        void ABeyondNet.DddomainEvent(INotification eventItem);
+        void AddDomainEvent(INotification eventItem);
         void AddValidator(AbstractRuleValidator<Entity<TEntity>> validator);
         void AddValidators();
         void AddValidators(ICollection<AbstractRuleValidator<Entity<TEntity>>> validators);

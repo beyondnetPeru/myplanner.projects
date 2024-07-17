@@ -1,4 +1,4 @@
-﻿using Ddd.ValueObjects;
+﻿using BeyondNet.Ddd.ValueObjects;
 
 namespace BeyondNet.Ddd.Test.Stubs
 {

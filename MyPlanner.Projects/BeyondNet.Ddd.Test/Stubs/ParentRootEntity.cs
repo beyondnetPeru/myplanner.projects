@@ -1,5 +1,5 @@
-﻿using Ddd.Interfaces;
-using Ddd.ValueObjects;
+﻿using BeyondNet.Ddd.Interfaces;
+using BeyondNet.Ddd.ValueObjects;
 
 namespace BeyondNet.Ddd.Test.Stubs
 {

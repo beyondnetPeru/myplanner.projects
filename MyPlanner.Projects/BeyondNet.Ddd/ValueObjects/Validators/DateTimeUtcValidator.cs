@@ -16,10 +16,10 @@ namespace BeyondNet.Ddd.ValueObjects.Validators
                 AddBrokenRule("Value", "Value must be in UTC format");
             }
 
-            if (Subject.Value < DateTime.Now.ABeyondNet.Dddays(1))
+            if (Subject.Value < DateTime.Now.AddDays(1))
             {
                 AddBrokenRule("Value", "Value must be in the future");
-            }           
-        }     
+            }
+        }
     }
 }

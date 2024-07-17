@@ -65,7 +65,7 @@ namespace BeyondNet.Ddd
 
         #region DomainEvents                        
 
-        public void ABeyondNet.DddomainEvent(INotification eventItem)
+        public void AddDomainEvent(INotification eventItem)
         {
             _domainEvents.Add(eventItem);
         }

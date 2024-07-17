@@ -1,5 +1,5 @@
-﻿using Ddd.Rules;
-using Ddd.Rules.Impl;
+﻿using BeyondNet.Ddd.Rules;
+using BeyondNet.Ddd.Rules.Impl;
 
 namespace BeyondNet.Ddd.Test.Stubs
 {
