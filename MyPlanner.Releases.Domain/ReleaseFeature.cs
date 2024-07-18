@@ -1,193 +1,216 @@
 ﻿
 using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
 using MyProjects.Domain.ReleaseAggregate.Events;
 
 
 namespace MyPlanner.Releases.Domain
 {
-    public class ReleaseFeature : Entity<ReleaseFeature>
+    public class ReleaseFeatureProps : IProps
     {
+        public IdValueObject Id { get; set; }
         public IdValueObject ReleaseId { get; set; }
         public StringValueObject FeatureName { get; set; }
         public StringValueObject? FeatureDescription { get; set; }
-        public List<ReleaseFeaturePhase> Phases { get; set; }
-        public List<ReleaseFeatureComment> Comments { get; set; }
-        public List<ReleaseFeatureRollout> Rollouts { get; set; }
+        public List<ReleaseFeaturePhase>? Phases { get; set; }
+        public List<ReleaseFeatureComment>? Comments { get; set; }
+        public List<ReleaseFeatureRollout>? Rollouts { get; set; }
         public ReleaseFeatureStatus FeatureStatus { get; set; }
 
-        private ReleaseFeature(IdValueObject releaseId, StringValueObject featureName, StringValueObject featureDescription)
+        public ReleaseFeatureProps(IdValueObject id, IdValueObject releaseId, StringValueObject featureName)
         {
+            Id = id;
             ReleaseId = releaseId;
             FeatureName = featureName;
-            FeatureDescription = featureDescription;
             FeatureStatus = ReleaseFeatureStatus.Registered;
 
             Phases = new List<ReleaseFeaturePhase>();
             Comments = new List<ReleaseFeatureComment>();
             Rollouts = new List<ReleaseFeatureRollout>();
-
-            AddDomainEvent(new ReleaseFeatureCreatedDomainEvent(releaseId.Value, featureName.Value));
         }
 
-        public static ReleaseFeature Create(IdValueObject ReleaseId, StringValueObject featureName, StringValueObject featureDescription)
+        public object Clone()
         {
-            return new ReleaseFeature(ReleaseId, featureName, featureDescription);
+            return new ReleaseFeatureProps(Id, ReleaseId, FeatureName)
+            {
+                FeatureDescription = FeatureDescription,
+                Phases = Phases,
+                Comments = Comments,
+                Rollouts = Rollouts,
+                FeatureStatus = FeatureStatus
+            };
+        }
+
+    }
+    public class ReleaseFeature : Entity<ReleaseFeature, ReleaseFeatureProps>
+    {
+        private ReleaseFeature(ReleaseFeatureProps props) : base(props)
+        {
+            if (Tracking.IsNew)
+                AddDomainEvent(new ReleaseFeatureCreatedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().FeatureName.Value));
+        }
+
+        public static ReleaseFeature Create(IdValueObject id, IdValueObject ReleaseId, StringValueObject featureName)
+        {
+            var props = new ReleaseFeatureProps(id, ReleaseId, featureName);
+
+            return new ReleaseFeature(props);
         }
 
         public void UpdateName(StringValueObject featureName)
         {
-            FeatureName = featureName;
+            Props.FeatureName = featureName;
         }
 
         public void UpdateDescription(StringValueObject featureDescription)
         {
-            FeatureDescription = featureDescription;
+            Props.FeatureDescription = featureDescription;
         }
 
         public void AddPhase(ReleaseFeaturePhase phase)
         {
-            if (FeatureStatus != ReleaseFeatureStatus.Registered)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.Registered)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not registered");
                 return;
             }
 
-            if (Phases.Any(p => p.Name.ToString()!.Equals(phase.Name.ToString(), StringComparison.CurrentCultureIgnoreCase)))
+            if (GetPropsCopy().Phases!.Any(p => p.GetPropsCopy().Name.ToString()!.Equals(phase.GetPropsCopy().Name.ToString(), StringComparison.CurrentCultureIgnoreCase)))
             {
                 AddBrokenRule("PhaseName", "Phase name already exists");
                 return;
             }
 
-            Phases.Add(phase);
+            Props.Phases!.Add(phase);
         }
 
         public void RemovePhase(ReleaseFeaturePhase phase)
         {
-            if (FeatureStatus != ReleaseFeatureStatus.Registered)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.Registered)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not registered");
                 return;
             }
 
-            if (!Phases.Contains(phase))
+            if (!GetPropsCopy().Phases!.Contains(phase))
             {
                 AddBrokenRule("Phase", "Phase not found");
                 return;
             }
 
-            Phases.Remove(phase);
+            Props.Phases!.Remove(phase);
         }
 
         public void AddRollout(ReleaseFeatureRollout rollout)
         {
-            if (FeatureStatus != ReleaseFeatureStatus.Registered)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.Registered)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not registered");
                 return;
             }
 
-            if (Rollouts.Contains(rollout))
+            if (GetPropsCopy().Rollouts!.Contains(rollout))
             {
                 AddBrokenRule("RolloutName", "Rollout Country already exists in the same date");
                 return;
             }
 
-            Rollouts.Add(rollout);
+            Props.Rollouts!.Add(rollout);
         }
 
         public void RemoveRollout(ReleaseFeatureRollout rollout)
         {
-            if (FeatureStatus != ReleaseFeatureStatus.Registered)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.Registered)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not registered");
                 return;
             }
 
-            if (!Rollouts.Contains(rollout))
+            if (!GetPropsCopy().Rollouts!.Contains(rollout))
             {
                 AddBrokenRule("Rollout", "Rollout not found");
                 return;
             }
 
-            Rollouts.Remove(rollout);
+            Props.Rollouts!.Remove(rollout);
 
         }
 
         public void AddComment(ReleaseFeatureComment comment)
         {
 
-            if (FeatureStatus == ReleaseFeatureStatus.Canceled)
+            if (GetPropsCopy().FeatureStatus == ReleaseFeatureStatus.Canceled)
             {
                 AddBrokenRule("FeatureStatus", "Feature is canceled");
                 return;
             }
 
-            if (Comments.Contains(comment))
+            if (GetPropsCopy().Comments!.Contains(comment))
             {
                 AddBrokenRule("Comment", "Comment already exists");
                 return;
             }
 
-            Comments.Add(comment);
+            Props.Comments!.Add(comment);
 
         }
 
         public void RemoveComment(ReleaseFeatureComment comment)
         {
-            if (FeatureStatus == ReleaseFeatureStatus.Canceled)
+            if (GetPropsCopy().FeatureStatus == ReleaseFeatureStatus.Canceled)
             {
                 AddBrokenRule("FeatureStatus", "Feature is canceled");
                 return;
             }
 
-            if (!Comments.Contains(comment))
+            if (!GetPropsCopy().Comments!.Contains(comment))
             {
                 AddBrokenRule("Comment", "Comment not found");
                 return;
             }
 
-            Comments.Remove(comment);
+            Props.Comments!.Remove(comment);
         }
 
         public void OnHold()
         {
-            if (FeatureStatus != ReleaseFeatureStatus.Registered)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.Registered)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not registered");
                 return;
             }
 
-            FeatureStatus = ReleaseFeatureStatus.OnHold;
+            Props.FeatureStatus = ReleaseFeatureStatus.OnHold;
 
-            AddDomainEvent(new ReleaseFeatureOnHoldDomainEvent(ReleaseId.Value, FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureOnHoldDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
         }
 
         public void Cancel()
         {
-            if (FeatureStatus == ReleaseFeatureStatus.Canceled)
+            if (GetPropsCopy().FeatureStatus == ReleaseFeatureStatus.Canceled)
             {
                 AddBrokenRule("FeatureStatus", "Feature is already canceled");
                 return;
             }
 
-            FeatureStatus = ReleaseFeatureStatus.Canceled;
+            Props.FeatureStatus = ReleaseFeatureStatus.Canceled;
 
-            AddDomainEvent(new ReleaseFeatureCanceledDomainEvent(ReleaseId.Value, FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureCanceledDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
 
         }
 
         public void Resume()
         {
-            if (FeatureStatus != ReleaseFeatureStatus.OnHold)
+            if (GetPropsCopy().FeatureStatus != ReleaseFeatureStatus.OnHold)
             {
                 AddBrokenRule("FeatureStatus", "Feature is not on hold");
                 return;
             }
 
-            FeatureStatus = ReleaseFeatureStatus.Registered;
+            Props.FeatureStatus = ReleaseFeatureStatus.Registered;
 
-            AddDomainEvent(new ReleaseFeatureResumeDomainEvent(ReleaseId.Value, FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureResumeDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
         }
     }
 

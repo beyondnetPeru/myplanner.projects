@@ -1,49 +1,80 @@
 ﻿
 using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
+using BeyondNet.Ddd.ValueObjects;
 using MyPlanner.Projects.Domain.DomainEvents;
 
 namespace MyPlanner.Projects.Domain
 {
-
-    public class Project : Entity<Project>
+    public class ProjectProps : IProps
     {
-        #region Properties
 
-        public Track? Track { get; private set; }
-        public Product Product { get; private set; } = Product.Default;
-        public Name Name { get; private set; }
-        public Description? Description { get; private set; }
-        public ProjectRiskLevel RiskLevel { get; private set; } = ProjectRiskLevel.Low;
-        public List<ProjectBacklog> Backlogs { get; private set; } = new List<ProjectBacklog>();
-        public Price? Budget { get; private set; }
-        public List<Price> ExtraBudget { get; private set; } = new List<Price>();
-        public List<ProjectScope> Scopes { get; private set; } = new List<ProjectScope>();
-        public Owner? Owner { get; private set; }
-        public List<Stakeholder> StakeHolders { get; private set; } = new List<Stakeholder>();
-        public ProjectStatus Status { get; private set; }
+        public IdValueObject Id { get; set; }
+        public Track? Track { get; set; }
+        public Product? Product { get; set; }
+        public Name Name { get; set; }
+        public Description? Description { get; set; }
+        public ProjectRiskLevel? RiskLevel { get; set; }
+        public List<ProjectBacklog>? Backlogs { get; set; }
+        public Price? Budget { get; set; }
+        public List<Price>? ExtraBudget { get; set; }
+        public List<ProjectScope>? Scopes { get; set; }
+        public Owner? Owner { get; set; }
+        public List<Stakeholder>? StakeHolders { get; set; }
+        public ProjectStatus Status { get; set; }
         public Audit Audit { get; set; }
 
-        #endregion
+        public ProjectProps(IdValueObject id, Name name)
+        {
+            Id = id;
+            Name = name;
+            Status = ProjectStatus.NotStarted;
+            Audit = Audit.Create("default");
+        }
+
+        public object Clone()
+        {
+            return new ProjectProps(Id, Name)
+            {
+                Track = Track,
+                Product = Product,
+                Description = Description,
+                RiskLevel = RiskLevel,
+                Backlogs = Backlogs,
+                Budget = Budget,
+                ExtraBudget = ExtraBudget,
+                Scopes = Scopes,
+                Owner = Owner,
+                StakeHolders = StakeHolders,
+                Status = Status,
+                Audit = Audit
+            };
+
+        }
+    }
+
+    public class Project : Entity<Project, ProjectProps>
+    {
 
         #region Constructors
 
-        private Project(Name name, Description description)
+        private Project(ProjectProps props) : base(props)
         {
-            Name = name;
-            Description = description;
-            Status = ProjectStatus.NotStarted;
-            Audit = Audit.Create("default");
-
-            AddDomainEvent(new ProjectCreatedDomainEvent(Id.Value, Name.Value));
+            if (Props.Track!.IsNew)
+                AddDomainEvent(new ProjectCreatedDomainEvent(props.Id.Value, props.Name.Value));
         }
 
         #endregion
 
         #region Factory Methods
 
-        public static Project Create(Name name, Description description)
+        public static Project Create(IdValueObject id, Name name)
         {
-            return new Project(name, description);
+            var props = new ProjectProps(id, name);
+
+            var project = new Project(props);
+
+            return project;
         }
 
         #endregion
@@ -52,172 +83,173 @@ namespace MyPlanner.Projects.Domain
 
         public void UpdateTrack(Track track)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(track), "Project is completed, you can't update the track");
 
-            Track = track;
-            Audit.Update("default");
+            Props.Track = track;
+
+            Props.Audit.Update("default");
         }
 
         public void UpdateName(Name name)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(name), "Project is completed, you can't update the name");
 
-            Name = name;
-            Audit.Update("default");
+            Props.Name = name;
+            Props.Audit.Update("default");
         }
 
         public void UpdateDescription(Description description)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(description), "Project is completed, you can't update the description");
 
-            Description = description;
-            Audit.Update("default");
+            Props.Description = description;
+            Props.Audit.Update("default");
         }
 
         public void UpdateRiskLevel(ProjectRiskLevel riskLevel)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(riskLevel), "Project is completed, you can't update the risk level");
 
-            RiskLevel = riskLevel;
-            Audit.Update("default");
+            Props.RiskLevel = riskLevel;
+            Props.Audit.Update("default");
 
-            AddDomainEvent(new ProjectRiskLevelUpdatedDomainEvent(Id.Value, Name.Value, RiskLevel.Name));
+            AddDomainEvent(new ProjectRiskLevelUpdatedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value, GetPropsCopy().RiskLevel!.Name));
         }
 
         public void UpdateBudget(Price budget)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(budget), "Project is completed, you can't update the budget");
 
-            Budget = budget;
-            Audit.Update("default");
+            Props.Budget = budget;
+            Props.Audit.Update("default");
         }
 
         public void UpdateOwner(Owner owner)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(owner), "Project is completed, you can't update the owner");
 
-            Owner = owner;
-            Audit.Update("default");
+            Props.Owner = owner;
+            Props.Audit.Update("default");
         }
 
         public void Start()
         {
-            if (Status != ProjectStatus.NotStarted)
-                AddBrokenRule(nameof(Status), "Project is already started");
+            if (GetPropsCopy().Status != ProjectStatus.NotStarted)
+                AddBrokenRule("Status", "Project is already started");
 
-            Status = ProjectStatus.InProgress;
-            Audit.Update("default");
+            Props.Status = ProjectStatus.InProgress;
+            Props.Audit.Update("default");
 
-            AddDomainEvent(new ProjectStartedDomainEvent(Id.Value, Name.Value));
+            AddDomainEvent(new ProjectStartedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
         }
 
         public void Complete()
         {
-            if (Status == ProjectStatus.Completed)
-                AddBrokenRule(nameof(Status), "Project is already completed");
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
+                AddBrokenRule("Status", "Project is already completed");
 
-            if (Status == ProjectStatus.OnHold)
-                AddBrokenRule(nameof(Status), "Project is on hold, you can't complete it");
+            if (GetPropsCopy().Status == ProjectStatus.OnHold)
+                AddBrokenRule("Status", "Project is on hold, you can't complete it");
 
-            Status = ProjectStatus.Completed;
-            Audit.Update("default");
+            Props.Status = ProjectStatus.Completed;
+            Props.Audit.Update("default");
 
-            AddDomainEvent(new ProjectCompletedDomainEvent(Id.Value, Name.Value));
+            AddDomainEvent(new ProjectCompletedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
         }
 
         public void Hold()
         {
-            if (Status == ProjectStatus.Completed)
-                AddBrokenRule(nameof(Status), "Project is completed, you can't hold it");
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
+                AddBrokenRule("Status", "Project is completed, you can't hold it");
 
-            if (Status == ProjectStatus.OnHold)
-                AddBrokenRule(nameof(Status), "Project is already on hold");
+            if (GetPropsCopy().Status == ProjectStatus.OnHold)
+                AddBrokenRule("Status", "Project is already on hold");
 
-            Status = ProjectStatus.OnHold;
-            Audit.Update("default");
+            Props.Status = ProjectStatus.OnHold;
+            Props.Audit.Update("default");
 
-            AddDomainEvent(new ProjectHoldedDomainEvent(Id.Value, Name.Value));
+            AddDomainEvent(new ProjectHoldedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
         }
 
         public void AddBacklog(ProjectBacklog backlog)
         {
-            if (Backlogs.Any(x => x.Id == backlog.Id) ||
-                Backlogs.Any(x => x.Name.ToString()!.Equals(backlog.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().Backlogs!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(backlog.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            Backlogs.Add(backlog);
-            Audit.Update("default");
+            Props.Backlogs!.Add(backlog);
+            Props.Audit.Update("default");
         }
 
         public void RemoveBacklog(ProjectBacklog backlog)
         {
-            if (Backlogs.Any(x => x.Id == backlog.Id))
-                Backlogs.Remove(backlog);
-
-            Audit.Update("default");
+            if (GetPropsCopy().Backlogs!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(backlog.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            {
+                Props.Backlogs!.Remove(backlog);
+                Props.Audit.Update("default");
+            }
         }
 
         public void AddScope(ProjectScope scope)
         {
-            if (Scopes.Any(x => x.Value.Description.ToString()!.Equals(scope.Value.Description.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().Scopes!.Any(x => x.Value.Description.ToString()!.Equals(scope.Value.Description.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            Scopes.Add(scope);
-            Audit.Update("default");
+            Props.Scopes!.Add(scope);
+            Props.Audit.Update("default");
         }
 
         public void RemoveScope(ProjectScope scope)
         {
-            if (Scopes.Any(x => x.Value.Description.ToString().ToLower()!.Equals(scope.Value.Description.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().Scopes!.Any(x => x.Value.Description.ToString().ToLower()!.Equals(scope.Value.Description.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                Scopes.Remove(scope);
-                Audit.Update("default");
+                Props.Scopes!.Remove(scope);
+                Props.Audit.Update("default");
             }
         }
 
         public void AddBudget(Price budget)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(budget), "Project is completed, you can't add budget");
 
-            Budget = budget;
+            Props.Budget = budget;
 
-            Audit.Update("default");
+            Props.Audit.Update("default");
         }
 
         public void AddExtraBudget(Price extraBudget)
         {
-            if (Status == ProjectStatus.Completed)
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
                 AddBrokenRule(nameof(extraBudget), "Project is completed, you can't add extra budget");
 
-            ExtraBudget.Add(extraBudget);
+            Props.ExtraBudget!.Add(extraBudget);
 
-            Audit.Update("default");
+            Props.Audit.Update("default");
         }
 
         public void AddStakeholder(Stakeholder stakeholder)
         {
-            if (StakeHolders.Any(x => x.Value.Name.ToString()!.Equals(stakeholder.Value.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().StakeHolders!.Any(x => x.Value.Name.ToString()!.Equals(stakeholder.Value.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            StakeHolders.Add(stakeholder);
+            Props.StakeHolders!.Add(stakeholder);
 
-            Audit.Update("default");
+            Props.Audit.Update("default");
         }
 
         public void RemoveStakeholder(Stakeholder stakeholder)
         {
-            if (StakeHolders.Any(x => x.Value.Name.ToString().ToLower()!.Equals(stakeholder.Value.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().StakeHolders!.Any(x => x.Value.Name.ToString().ToLower()!.Equals(stakeholder.Value.Name.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                StakeHolders.Remove(stakeholder);
+                Props.StakeHolders!.Remove(stakeholder);
 
-                Audit.Update("default");
+                Props.Audit.Update("default");
             }
 
         }

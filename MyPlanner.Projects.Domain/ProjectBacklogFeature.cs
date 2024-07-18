@@ -1,66 +1,84 @@
 ﻿
 using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
-using MyPlanner.Projects.Domain;
 
 namespace MyPlanner.Projects.Domain
 {
-    public class ProjectBackLogFeature : Entity<ProjectBackLogFeature>
+    public class ProjectBackLogFeatureProps : IProps
     {
         public Name Name { get; set; }
-        public Description Description { get; set; }
-        public Priority Priority { get; set; }
+        public Description? Description { get; set; }
+        public Priority? Priority { get; set; }
         public BackLogFeatureStatus Status { get; set; }
 
-        private ProjectBackLogFeature(Name name)
+        public ProjectBackLogFeatureProps(Name name)
         {
             Name = name;
             Description = Description.DefaultValue;
             Priority = Priority.DefaultValue;
             Status = BackLogFeatureStatus.ToDo;
+        }
 
+        public object Clone()
+        {
+            return new ProjectBackLogFeatureProps(Name)
+            {
+                Description = Description,
+                Priority = Priority,
+                Status = Status
+            };
+        }
+    }
+
+    public class ProjectBackLogFeature : Entity<ProjectBackLogFeature, ProjectBackLogFeatureProps>
+    {
+
+        private ProjectBackLogFeature(ProjectBackLogFeatureProps props) : base(props)
+        {
         }
 
         public static ProjectBackLogFeature Create(Name name)
         {
-            return new ProjectBackLogFeature(name);
+            var props = new ProjectBackLogFeatureProps(name);
+
+            return new ProjectBackLogFeature(props);
         }
 
         public void UpdateName(Name name)
         {
-            Name = name;
+            Props.Name = name;
         }
 
         public void UpdateDescription(Description description)
         {
-            Description = description;
+            Props.Description = description;
         }
 
         public void UpdatePriority(Priority priority)
         {
-            Priority = priority;
+            Props.Priority = priority;
         }
 
         public void ToDo()
         {
-            Status = BackLogFeatureStatus.ToDo;
+            Props.Status = BackLogFeatureStatus.ToDo;
         }
 
         public void InProgress()
         {
-            Status = BackLogFeatureStatus.InProgress;
+            Props.Status = BackLogFeatureStatus.InProgress;
         }
 
         public void OnHold()
         {
-            Status = BackLogFeatureStatus.OnHold;
+            Props.Status = BackLogFeatureStatus.OnHold;
         }
 
         public void Done()
         {
-            Status = BackLogFeatureStatus.Done;
+            Props.Status = BackLogFeatureStatus.Done;
         }
-
     }
 
     public class BackLogFeatureStatus : Enumeration

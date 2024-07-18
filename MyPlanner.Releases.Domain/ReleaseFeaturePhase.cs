@@ -1,87 +1,102 @@
 ﻿
 using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
 
 namespace MyPlanner.Releases.Domain
 {
-    public class ReleaseFeaturePhase : Entity<ReleaseFeaturePhase>
+    public class ReleaseFeaturePhaseProps : IProps
     {
         public StringValueObject Name { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public ReleaseFeaturePhaseStatus Status { get; set; }
 
-        private ReleaseFeaturePhase(StringValueObject name)
+        public ReleaseFeaturePhaseProps(StringValueObject name, DateTime startDate, DateTime endDate)
         {
             Name = name;
-            StartDate = DateTime.Now;
-            EndDate = DateTime.Now.AddMonths(1);
+            StartDate = startDate;
+            EndDate = endDate;
             Status = ReleaseFeaturePhaseStatus.Registered;
         }
 
-        public static ReleaseFeaturePhase Create(StringValueObject name)
+        public object Clone()
         {
-            return new ReleaseFeaturePhase(name);
+            return new ReleaseFeaturePhaseProps(Name, StartDate, EndDate);
+        }
+    }
+
+    public class ReleaseFeaturePhase : Entity<ReleaseFeaturePhase, ReleaseFeaturePhaseProps>
+    {
+        private ReleaseFeaturePhase(ReleaseFeaturePhaseProps props): base(props)
+        {
+        }
+
+        public static ReleaseFeaturePhase Create(StringValueObject name, DateTime startDate, DateTime endDate)
+        {
+            var props = new ReleaseFeaturePhaseProps(name, startDate, endDate);
+            
+            return new ReleaseFeaturePhase(props);
         }
 
         public void UpdateName(StringValueObject name)
         {
-            Name = name;
+            Props.Name = name;
         }
 
         public void UpdateStartDate(DateTime startDate)
         {
-            if (startDate.Date >= EndDate.Date)
+            if (startDate.Date >= GetPropsCopy().EndDate.Date)
             {
                 AddBrokenRule("StartDate", "Start date must be before end date");
                 return;
             }
 
-            StartDate = startDate;
+            Props.StartDate = startDate;
         }
 
         public void UpdateEndDate(DateTime endDate)
         {
-            if (endDate.Date <= StartDate.Date)
+            if (endDate.Date <= GetPropsCopy().StartDate.Date)
             {
                 AddBrokenRule("EndDate", "End date must be after start date");
                 return;
             }
 
-            EndDate = endDate;
+            Props.EndDate = endDate;
         }
 
         public void OnHold()
         {
-            if (Status == ReleaseFeaturePhaseStatus.Canceled)
+            if ( GetPropsCopy().Status == ReleaseFeaturePhaseStatus.Canceled)
             {
                 AddBrokenRule("Status", "Phase is canceled");
                 return;
             }
 
-            Status = ReleaseFeaturePhaseStatus.OnHold;
+            Props.Status = ReleaseFeaturePhaseStatus.OnHold;
         }
 
         public void Cancel()
         {
-            if (Status == ReleaseFeaturePhaseStatus.Canceled)
+            if (GetPropsCopy().Status == ReleaseFeaturePhaseStatus.Canceled)
             {
                 AddBrokenRule("Status", "Phase is already canceled");
                 return;
             }
 
-            Status = ReleaseFeaturePhaseStatus.Canceled;
+            Props.Status = ReleaseFeaturePhaseStatus.Canceled;
         }
 
         public void Resume()
         {
-            if (Status != ReleaseFeaturePhaseStatus.OnHold)
+            if (GetPropsCopy().Status != ReleaseFeaturePhaseStatus.OnHold)
             {
                 AddBrokenRule("Status", "Phase is not on hold");
                 return;
             }
 
-            Status = ReleaseFeaturePhaseStatus.Registered;
+            Props.Status = ReleaseFeaturePhaseStatus.Registered;
         }
     }
 

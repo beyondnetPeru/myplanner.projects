@@ -2,7 +2,6 @@
 using BeyondNet.Ddd.Rules;
 using BeyondNet.Ddd.Rules.Impl;
 using BeyondNet.Ddd.Rules.PropertyChange;
-using System.Collections.ObjectModel;
 
 namespace BeyondNet.Ddd
 {
@@ -59,7 +58,7 @@ namespace BeyondNet.Ddd
             AddValidators();
 
             Validate();
-            
+
         }
 
         #endregion
@@ -87,7 +86,7 @@ namespace BeyondNet.Ddd
         {
             _brokenRules.Clear();
 
-            _brokenRules.Add(_validatorRules.GetBrokenRules());          
+            _brokenRules.Add(_validatorRules.GetBrokenRules());
         }
 
         public void AddValidator(AbstractRuleValidator<ValueObject<TValue>> validator)
@@ -105,7 +104,7 @@ namespace BeyondNet.Ddd
             _validatorRules.Remove(validator);
         }
 
-        
+
         public IReadOnlyCollection<BrokenRule> GetBrokenRules()
         {
             return this._brokenRules.GetBrokenRules();

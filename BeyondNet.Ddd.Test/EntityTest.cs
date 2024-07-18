@@ -16,7 +16,7 @@ namespace BeyondNet.Ddd.Test
         {
             var owner = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create("bar"));
 
-            Assert.IsInstanceOfType(owner, typeof(Entity<ParentRootEntity>));
+            Assert.IsInstanceOfType(owner, typeof(ParentRootEntity));
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace BeyondNet.Ddd.Test
 
             owner.Validate();
 
-            owner.IsValid.ShouldBeFalse();  
+            owner.IsValid.ShouldBeFalse();
         }
 
         [TestMethod]

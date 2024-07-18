@@ -1,4 +1,5 @@
 ﻿using BeyondNet.Ddd.Helpers;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.Rules;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -8,11 +9,11 @@ namespace BeyondNet.Ddd.Extensions
 
     public static class EntityExtension
     {
-        public static ReadOnlyCollection<BrokenRule> GetPropertiesBrokenRules(this Entity<object> entity, PropertyInfo[] properties) 
+        public static ReadOnlyCollection<BrokenRule> GetPropertiesBrokenRules<TEntity, TProps>(this Entity<TEntity, TProps> entity, PropertyInfo[] properties)
+            where TEntity : Entity<TEntity, TProps>
+            where TProps : class, IProps
         {
-            
             var result = new List<BrokenRule>();
-         
 
             foreach (var property in properties)
             {

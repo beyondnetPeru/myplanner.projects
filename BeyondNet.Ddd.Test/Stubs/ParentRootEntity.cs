@@ -3,21 +3,36 @@ using BeyondNet.Ddd.ValueObjects;
 
 namespace BeyondNet.Ddd.Test.Stubs
 {
-    public class ParentRootEntity : Entity<ParentRootEntity>, IAggregateRoot
+    public class ParentRootProps: IProps
     {
+        public FieldName? FieldName { get; set; }
+        public StringValueObject? Name { get; set; }
 
-        public FieldName FieldName { get; }
-        public StringValueObject Name { get; }
-
-        private ParentRootEntity(StringValueObject name, FieldName fieldName)
+        public object Clone()
         {
-            Name = name;
-            FieldName = fieldName;
+            return new ParentRootProps
+            {
+                FieldName = FieldName,
+                Name = Name
+            };
+        }
+    }
+
+    public class ParentRootEntity : Entity<ParentRootEntity, ParentRootProps>, IAggregateRoot
+    {
+        public ParentRootEntity(ParentRootProps props) : base(props)
+        {
         }
 
         public static ParentRootEntity Create(StringValueObject name, FieldName fieldName)
         {
-            return new ParentRootEntity(name, fieldName);
+            var props = new ParentRootProps
+            {
+                FieldName = fieldName,
+                Name = name
+            };
+
+            return new ParentRootEntity(props);
         }
 
     }

@@ -1,29 +1,49 @@
 ﻿using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
 
 namespace MyProjects.Domain.ReleaseAggregate
 {
-    public class ReleaseComment : Entity<ReleaseComment>
+    public class ReleaseCommentProps : IProps
     {
         public StringValueObject Text { get; set; }
         public DateTime Date { get; set; }
 
-        private ReleaseComment(StringValueObject text, DateTime date)
+        public ReleaseCommentProps(StringValueObject text)
         {
             Text = text;
-            Date = date;
+            Date = DateTime.Now;
         }
 
-
-        public static ReleaseComment Create(StringValueObject text, DateTime date)
+        public object Clone()
         {
-            return new ReleaseComment(text, date);
+            return new ReleaseCommentProps(Text)
+            {
+                Date = Date
+            };
+
+        }
+    }
+
+    public class ReleaseComment : Entity<ReleaseComment, ReleaseCommentProps>
+    {
+
+        private ReleaseComment(ReleaseCommentProps props) : base(props)
+        {
+
+        }
+
+        public static ReleaseComment Create(StringValueObject text)
+        {
+            var props = new ReleaseCommentProps(text);
+
+            return new ReleaseComment(props);
         }
 
         public void Update(StringValueObject text, DateTime date)
         {
-            Text = text;
-            Date = date;
+            Props.Text = text;
+            Props.Date = date;
         }
     }
 }

@@ -1,69 +1,93 @@
-﻿
-
-using BeyondNet.Ddd;
+﻿using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 
 namespace MyPlanner.Projects.Domain
 {
-    public class ProjectBacklog : Entity<ProjectBacklog>
+    public class ProjectBacklogProps : IProps
     {
         public Name Name { get; set; }
         public Description Description { get; set; } = Description.DefaultValue;
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public List<ProjectBackLogFeature> Features { get; set; } = new List<ProjectBackLogFeature>();
         public ProjectBacklogStatus Status { get; set; }
 
-        private ProjectBacklog(Name name, DateTime startDate, DateTime endDate)
+        public ProjectBacklogProps(Name name)
         {
             Name = name;
-            StartDate = startDate;
-            EndDate = endDate;
+
             Status = ProjectBacklogStatus.NotStarted;
+        }
+
+        public object Clone()
+        {
+            return new ProjectBacklogProps(Name)
+            {
+                Description = Description,
+                StartDate = StartDate,
+                EndDate = EndDate,
+                Features = Features,
+                Status = Status
+            };
+        }
+    }
+
+    public class ProjectBacklog : Entity<ProjectBacklog, ProjectBacklogProps>
+    {
+        private ProjectBacklog(ProjectBacklogProps props) : base(props)
+        {
+
         }
 
         public static ProjectBacklog Create(Name name, DateTime startDate, DateTime endDate)
         {
-            return new ProjectBacklog(name, startDate, endDate);
+            var props = new ProjectBacklogProps(name)
+            {
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            return new ProjectBacklog(props);
         }
 
         public void UpdateName(Name name)
         {
-            Name = name;
+            Props.Name = name;
         }
 
         public void UpdateStartDate(DateTime startDate)
         {
-            StartDate = startDate;
+            Props.StartDate = startDate;
         }
 
         public void UpdateEndDate(DateTime endDate)
         {
-            EndDate = endDate;
+            Props.EndDate = endDate;
         }
 
         public void AddFeature(ProjectBackLogFeature feature)
         {
-            Features.Add(feature);
+            Props.Features.Add(feature);
         }
 
         public void RemoveFeature(ProjectBackLogFeature feature)
         {
-            Features.Remove(feature);
+            Props.Features.Remove(feature);
         }
 
         public void Start()
         {
-            Status = ProjectBacklogStatus.InProgress;
+            Props.Status = ProjectBacklogStatus.InProgress;
         }
 
         public void Complete()
         {
-            Status = ProjectBacklogStatus.Completed;
+            Props.Status = ProjectBacklogStatus.Completed;
         }
 
         public void Hold()
         {
-            Status = ProjectBacklogStatus.OnHold;
+            Props.Status = ProjectBacklogStatus.OnHold;
         }
 
     }

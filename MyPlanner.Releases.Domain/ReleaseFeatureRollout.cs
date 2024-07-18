@@ -1,33 +1,48 @@
 ﻿
 using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
 
 namespace MyPlanner.Releases.Domain
 {
-    public class ReleaseFeatureRollout : Entity<ReleaseFeatureRollout>
+    public class ReleaseFeatureRolloutProps: IProps
     {
         public StringValueObject Country { get; set; }
         public DateTime RegisterDate { get; set; }
 
-        private ReleaseFeatureRollout(StringValueObject country, DateTime date)
+        public ReleaseFeatureRolloutProps(StringValueObject country, DateTime date)
         {
             Country = country;
             RegisterDate = date;
+        }
+
+        public object Clone()
+        {
+            return new ReleaseFeatureRolloutProps(Country, RegisterDate);
+        }
+    }
+
+    public class ReleaseFeatureRollout : Entity<ReleaseFeatureRollout, ReleaseFeatureRolloutProps>
+    {
+        private ReleaseFeatureRollout(ReleaseFeatureRolloutProps props) : base(props)
+        {
         }
 
         public static ReleaseFeatureRollout Create(StringValueObject country, DateTime date)
         {
-            return new ReleaseFeatureRollout(country, date);
+            var props = new ReleaseFeatureRolloutProps(country, date);
+
+            return new ReleaseFeatureRollout(props);
         }
 
         public void UpdateCountry(StringValueObject country)
         {
-            Country = country;
+            Props.Country = country;
         }
 
         public void UpdateDate(DateTime date)
         {
-            RegisterDate = date;
+            Props.RegisterDate = date;
         }
     }
 }

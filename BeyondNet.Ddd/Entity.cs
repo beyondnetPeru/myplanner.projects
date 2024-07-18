@@ -1,29 +1,33 @@
 ﻿using MediatR;
-using BeyondNet.Ddd.ValueObjects;
 using BeyondNet.Ddd.Rules;
 using BeyondNet.Ddd.Interfaces;
 using System.Collections.ObjectModel;
 using BeyondNet.Ddd.Extensions;
 using BeyondNet.Ddd.Rules.Impl;
+using BeyondNet.Ddd.Impl;
 
 namespace BeyondNet.Ddd
 {
-    public abstract class Entity<TEntity> : IEntity<TEntity>
+    public abstract class Entity<TEntity, TProps> : IEntity<TEntity, TProps>
+        where TEntity : Entity<TEntity, TProps>
+        where TProps : class, IProps
     {
         #region Members         
 
         private List<INotification> _domainEvents = new List<INotification>();
         public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
 
-        public ValidatorRules<Entity<TEntity>> _validatorRules = new ValidatorRules<Entity<TEntity>>();
+        public ValidatorRules<Entity<TEntity, TProps>> _validatorRules = new ValidatorRules<Entity<TEntity, TProps>>();
 
         public BrokenRules _brokenRules = new BrokenRules();
+
+        public Tracking Tracking = new Tracking().MarkDefault();
 
         #endregion
 
         #region Properties
 
-        public IdValueObject Id { get; private set; }
+        protected TProps Props { get; set; }
 
         public int Version { get; private set; }
 
@@ -33,13 +37,13 @@ namespace BeyondNet.Ddd
 
         #region Constructor
 
-        protected Entity()
+        protected Entity(TProps props)
         {
-            Id = IdValueObject.Create();
-
             _brokenRules = new BrokenRules();
 
             Version = 0;
+
+            Props = props;
 
             AddValidators();
 
@@ -50,6 +54,13 @@ namespace BeyondNet.Ddd
         #endregion
 
         #region Methods
+        public TProps GetPropsCopy()
+        {
+            var copyProps = Props.Clone();
+
+            return (TProps)copyProps;
+        }
+
 
         public void SetVersion(int version)
         {
@@ -97,17 +108,17 @@ namespace BeyondNet.Ddd
 
         public virtual void AddValidators() { }
 
-        public void AddValidator(AbstractRuleValidator<Entity<TEntity>> validator)
+        public void AddValidator(AbstractRuleValidator<Entity<TEntity, TProps>> validator)
         {
             _validatorRules.Add(validator);
         }
 
-        public void AddValidators(ICollection<AbstractRuleValidator<Entity<TEntity>>> validators)
+        public void AddValidators(ICollection<AbstractRuleValidator<Entity<TEntity, TProps>>> validators)
         {
             _validatorRules.Add(validators);
         }
 
-        public void RemoveValidator(AbstractRuleValidator<Entity<TEntity>> validator)
+        public void RemoveValidator(AbstractRuleValidator<Entity<TEntity, TProps>> validator)
         {
             _validatorRules.Remove(validator);
         }
@@ -127,7 +138,7 @@ namespace BeyondNet.Ddd
         #region Equality
         public override bool Equals(object obj)
         {
-            if (obj == null || !(obj is Entity<TEntity>))
+            if (obj == null || !(obj is Entity<TEntity, TProps>))
                 return false;
 
             if (ReferenceEquals(this, obj))
@@ -136,10 +147,7 @@ namespace BeyondNet.Ddd
             if (GetType() != obj.GetType())
                 return false;
 
-            Entity<TEntity> item = (Entity<TEntity>)obj;
-
-
-            return item.Id == Id;
+            return true;
         }
 
         public override int GetHashCode()
@@ -147,7 +155,7 @@ namespace BeyondNet.Ddd
             return base.GetHashCode();
         }
 
-        public static bool operator ==(Entity<TEntity> left, Entity<TEntity> right)
+        public static bool operator ==(Entity<TEntity, TProps> left, Entity<TEntity, TProps> right)
         {
             if (Equals(left, null))
                 return Equals(right, null) ? true : false;
@@ -155,7 +163,7 @@ namespace BeyondNet.Ddd
                 return left.Equals(right);
         }
 
-        public static bool operator !=(Entity<TEntity> left, Entity<TEntity> right)
+        public static bool operator !=(Entity<TEntity, TProps> left, Entity<TEntity, TProps> right)
         {
             return !(left == right);
         }
@@ -163,3 +171,4 @@ namespace BeyondNet.Ddd
         #endregion
     }
 }
+
