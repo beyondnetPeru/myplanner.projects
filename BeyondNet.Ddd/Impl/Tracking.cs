@@ -1,32 +1,74 @@
-﻿namespace BeyondNet.Ddd.Impl
+﻿using BeyondNet.Ddd.Interfaces;
+
+namespace BeyondNet.Ddd.Impl
 {
     public class Tracking
     {
         public bool IsNew { get; private set; }
         public bool IsDirty { get; private set; }
 
-        public Tracking MarkNew()
+        public static Tracking MarkClean()
         {
-            IsNew = true;
-            IsDirty = false;
-
-            return this;
+            return new Tracking() { 
+                IsNew = false,
+                IsDirty = false
+            };
         }
 
-        public Tracking MarkDefault()
+        public static Tracking MarkDirty<TProp>(TProp props) where TProp : IProps
         {
-            IsNew = false;
-            IsDirty = false;
+            var isDirty = FindChanges(props);
 
-            return this;
+            if (isDirty)
+            {
+                return new Tracking()
+                {
+                    IsDirty = true,
+                    IsNew = false
+                };
+            }
+
+            return Tracking.MarkNew();
         }
 
-        public Tracking MarkDirty()
+        public static Tracking MarkDirty() 
         {
-            IsNew = false;
-            IsDirty = true;
+            return new Tracking()
+            {
+                IsDirty = true,
+                IsNew = false
+            };
+        }
 
-            return this;
+        public static Tracking MarkNew()
+        {
+            return new Tracking
+            {
+                IsDirty = false,
+                IsNew = true
+            };
+        }
+
+        protected static bool FindChanges<TProp>(TProp props) where TProp : IProps
+        {
+            foreach (var prop in props.GetType().GetProperties())
+            {
+                object value = prop.GetValue(props)!;
+
+                var trackingProperty = value.GetType().GetProperty("Tracking");
+
+                if (trackingProperty != null)
+                {
+                    var trackingValue = (Tracking)trackingProperty.GetValue(value)!;
+
+                    if (trackingValue.IsDirty)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

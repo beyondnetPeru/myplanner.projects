@@ -47,8 +47,8 @@ namespace MyPlanner.Releases.Domain
     {
         private ReleaseFeature(ReleaseFeatureProps props) : base(props)
         {
-            if (Tracking.IsNew)
-                AddDomainEvent(new ReleaseFeatureCreatedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().FeatureName.Value));
+            if (this.IsNew())
+                AddDomainEvent(new ReleaseFeatureCreatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().FeatureName.GetValue()));
         }
 
         public static ReleaseFeature Create(IdValueObject id, IdValueObject ReleaseId, StringValueObject featureName)
@@ -60,12 +60,12 @@ namespace MyPlanner.Releases.Domain
 
         public void UpdateName(StringValueObject featureName)
         {
-            Props.FeatureName = featureName;
+            GetProps().FeatureName = featureName;
         }
 
         public void UpdateDescription(StringValueObject featureDescription)
         {
-            Props.FeatureDescription = featureDescription;
+            GetProps().FeatureDescription = featureDescription;
         }
 
         public void AddPhase(ReleaseFeaturePhase phase)
@@ -82,7 +82,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Phases!.Add(phase);
+            GetProps().Phases!.Add(phase);
         }
 
         public void RemovePhase(ReleaseFeaturePhase phase)
@@ -99,7 +99,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Phases!.Remove(phase);
+            GetProps().Phases!.Remove(phase);
         }
 
         public void AddRollout(ReleaseFeatureRollout rollout)
@@ -116,7 +116,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Rollouts!.Add(rollout);
+            GetProps().Rollouts!.Add(rollout);
         }
 
         public void RemoveRollout(ReleaseFeatureRollout rollout)
@@ -133,7 +133,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Rollouts!.Remove(rollout);
+            GetProps().Rollouts!.Remove(rollout);
 
         }
 
@@ -152,7 +152,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Comments!.Add(comment);
+            GetProps().Comments!.Add(comment);
 
         }
 
@@ -170,7 +170,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Comments!.Remove(comment);
+            GetProps().Comments!.Remove(comment);
         }
 
         public void OnHold()
@@ -181,9 +181,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.FeatureStatus = ReleaseFeatureStatus.OnHold;
+            GetProps().FeatureStatus = ReleaseFeatureStatus.OnHold;
 
-            AddDomainEvent(new ReleaseFeatureOnHoldDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureOnHoldDomainEvent(GetPropsCopy().ReleaseId.GetValue(), GetPropsCopy().FeatureName.GetValue()));
         }
 
         public void Cancel()
@@ -194,9 +194,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.FeatureStatus = ReleaseFeatureStatus.Canceled;
+            GetProps().FeatureStatus = ReleaseFeatureStatus.Canceled;
 
-            AddDomainEvent(new ReleaseFeatureCanceledDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureCanceledDomainEvent(GetPropsCopy().ReleaseId.GetValue(), GetPropsCopy().FeatureName.GetValue()));
 
         }
 
@@ -208,9 +208,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.FeatureStatus = ReleaseFeatureStatus.Registered;
+            GetProps().FeatureStatus = ReleaseFeatureStatus.Registered;
 
-            AddDomainEvent(new ReleaseFeatureResumeDomainEvent(GetPropsCopy().ReleaseId.Value, GetPropsCopy().FeatureName.Value));
+            AddDomainEvent(new ReleaseFeatureResumeDomainEvent(GetPropsCopy().ReleaseId.GetValue(), GetPropsCopy().FeatureName.GetValue()));
         }
     }
 

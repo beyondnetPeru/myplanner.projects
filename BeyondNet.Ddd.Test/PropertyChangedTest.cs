@@ -7,7 +7,7 @@ namespace BeyondNet.Ddd.Test
     [TestClass]
     public class NotifyPropertyChangedBaseTests
     {
-        private class TestNotifyPropertyChangedBase : NotifyPropertyChangedBase
+        private class TestNotifyPropertyChangedBase : AbstractNotifyPropertyChanged
         {
             public TestNotifyPropertyChangedBase()
             {

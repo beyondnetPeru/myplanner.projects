@@ -41,7 +41,7 @@ namespace MyPlanner.Releases.Domain
 
         public void UpdateName(StringValueObject name)
         {
-            Props.Name = name;
+            GetProps().Name = name;
         }
 
         public void UpdateStartDate(DateTime startDate)
@@ -52,7 +52,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.StartDate = startDate;
+            GetProps().StartDate = startDate;
         }
 
         public void UpdateEndDate(DateTime endDate)
@@ -63,7 +63,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.EndDate = endDate;
+            GetProps().EndDate = endDate;
         }
 
         public void OnHold()
@@ -74,7 +74,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseFeaturePhaseStatus.OnHold;
+            GetProps().Status = ReleaseFeaturePhaseStatus.OnHold;
         }
 
         public void Cancel()
@@ -85,7 +85,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseFeaturePhaseStatus.Canceled;
+            GetProps().Status = ReleaseFeaturePhaseStatus.Canceled;
         }
 
         public void Resume()
@@ -96,7 +96,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseFeaturePhaseStatus.Registered;
+            GetProps().Status = ReleaseFeaturePhaseStatus.Registered;
         }
     }
 

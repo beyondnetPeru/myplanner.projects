@@ -52,42 +52,42 @@ namespace MyPlanner.Projects.Domain
 
         public void UpdateName(Name name)
         {
-            Props.Name = name;
+            GetProps().Name = name;
         }
 
         public void UpdateStartDate(DateTime startDate)
         {
-            Props.StartDate = startDate;
+            GetProps().StartDate = startDate;
         }
 
         public void UpdateEndDate(DateTime endDate)
         {
-            Props.EndDate = endDate;
+            GetProps().EndDate = endDate;
         }
 
         public void AddFeature(ProjectBackLogFeature feature)
         {
-            Props.Features.Add(feature);
+            GetProps().Features.Add(feature);
         }
 
         public void RemoveFeature(ProjectBackLogFeature feature)
         {
-            Props.Features.Remove(feature);
+            GetProps().Features.Remove(feature);
         }
 
         public void Start()
         {
-            Props.Status = ProjectBacklogStatus.InProgress;
+            GetProps().Status = ProjectBacklogStatus.InProgress;
         }
 
         public void Complete()
         {
-            Props.Status = ProjectBacklogStatus.Completed;
+            GetProps().Status = ProjectBacklogStatus.Completed;
         }
 
         public void Hold()
         {
-            Props.Status = ProjectBacklogStatus.OnHold;
+            GetProps().Status = ProjectBacklogStatus.OnHold;
         }
 
     }

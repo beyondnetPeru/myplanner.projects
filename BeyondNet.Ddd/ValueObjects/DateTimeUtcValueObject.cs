@@ -6,7 +6,7 @@ namespace BeyondNet.Ddd.ValueObjects
     {
         protected DateTimeUtcValueObject(DateTime value):base(value)
         {         
-            Value = value;
+           
         }
 
         public static DateTimeUtcValueObject Create(DateTime value)

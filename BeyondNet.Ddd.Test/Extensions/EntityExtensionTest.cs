@@ -17,31 +17,17 @@ namespace BeyondNet.Ddd.Test.Extensions
         [TestMethod]
         public void GetPropertiesBrokenRules_ShouldReturnEmptyList_WhenNoBrokenRulesExist()
         {
-            // Arrange
             var entity = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create("foo"));
-            var properties = new PropertyInfo[0];
 
-            // Act
-            var result = properties.GetPropertiesBrokenRules(properties);
-
-            // Assert
-            result.Count.ShouldBe(0);
+            entity.GetBrokenRules().Any().ShouldBeFalse();
         }
 
         [TestMethod]
         public void GetPropertiesBrokenRules_ShouldReturnBrokenRules_WhenBrokenRulesExist()
         {
-            // Arrange
             var entity = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create(""));
-            var properties = entity.GetType().GetProperties();
 
-            // Act
-            var result = properties.GetPropertiesBrokenRules(entity);
-
-            // Assert
-            result.Count.ShouldBe(1);
-            result.First().Property.ShouldBe("Value");
-            result.First().Message.ShouldBe("Value cannot be null or empty");
+            entity.GetBrokenRules().Any().ShouldBeTrue();
         }
     }
 

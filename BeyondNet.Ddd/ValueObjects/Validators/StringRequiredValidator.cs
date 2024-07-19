@@ -11,7 +11,7 @@ namespace BeyondNet.Ddd.ValueObjects.Validators
 
         public override void AddRules(RuleContext context)
         {           
-            if (string.IsNullOrEmpty(Subject!.Value!.ToString()))
+            if (string.IsNullOrEmpty(Subject!.GetValue()!.ToString()))
             {
                 AddBrokenRule("Value", "Value cannot be null or empty");
             }

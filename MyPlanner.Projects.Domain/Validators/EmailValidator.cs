@@ -13,7 +13,7 @@ namespace MyPlanner.Projects.Domain.Validators
 
         public override void AddRules(RuleContext context)
         {
-            var value = Subject!.Value;
+            var value = Subject!.GetValue();
 
             if (string.IsNullOrWhiteSpace(value))
             {

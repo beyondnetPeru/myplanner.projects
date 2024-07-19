@@ -42,8 +42,12 @@ namespace MyProjects.Domain.ReleaseAggregate
 
         public void Update(StringValueObject text, DateTime date)
         {
-            Props.Text = text;
-            Props.Date = date;
+            var props = GetProps();
+            
+            props.Text = text;
+            props.Date = date;
+
+            SetProps(props);
         }
     }
 }

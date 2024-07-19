@@ -28,24 +28,18 @@ namespace BeyondNet.Ddd.Test
         }
 
         [TestMethod]
-        public void Should_Get_PropertiesBrokenRules()
+        public void Should_Entity_Valid_Be_True()
         {
-            var owner = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create(""));
+            var owner = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create("foo"));
 
-            var properties = owner.GetType().GetProperties();
-
-            var result = properties.GetPropertiesBrokenRules(owner);
-
-            Assert.AreEqual(1, result.Count);
+            owner.IsValid.ShouldBeTrue();
         }
 
         [TestMethod]
         public void Should_Validate_Entity_NotValid()
         {
             var owner = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create(""));
-
-            owner.Validate();
-
+            
             owner.IsValid.ShouldBeFalse();
         }
 
@@ -455,6 +449,14 @@ namespace BeyondNet.Ddd.Test
             owner.Validate();
 
             owner._brokenRules.GetBrokenRules().Count.ShouldBeGreaterThan(0);
+        }
+
+        [TestMethod]
+        public void Should_Validate_Entity_Track_IsNew()
+        {
+            var owner = ParentRootEntity.Create(StringValueObject.Create("foo"), FieldName.Create("bar"));
+
+            owner.Tracking.IsNew.ShouldBeTrue();
         }
     }
 }

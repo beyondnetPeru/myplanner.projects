@@ -40,17 +40,17 @@ namespace MyPlanner.Releases.Domain
 
         public void UpdateComment(StringValueObject comment)
         {
-            Props.Comment = comment;
+            GetProps().Comment = comment;
         }
 
         public void UpdateAuthor(StringValueObject author)
         {
-            Props.Author = author;
+            GetProps().Author = author;
         }
 
         public void UpdateDate(StringValueObject date)
         {
-            Props.Date = date;
+            GetProps().Date = date;
         }
     }
 }

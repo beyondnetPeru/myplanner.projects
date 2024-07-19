@@ -1,4 +1,5 @@
-﻿using BeyondNet.Ddd.Interfaces;
+﻿using BeyondNet.Ddd.Impl;
+using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.Rules;
 using BeyondNet.Ddd.Rules.Impl;
 using BeyondNet.Ddd.Rules.PropertyChange;
@@ -9,13 +10,11 @@ namespace BeyondNet.Ddd
     /// Base class for value objects in the domain-driven design.
     /// </summary>
     /// <typeparam name="TValue">The type of the value object.</typeparam>
-    public abstract class ValueObject<TValue> : NotifyPropertyChangedBase, IValueObject<TValue>
+    public abstract class ValueObject<TValue> : AbstractNotifyPropertyChanged, IValueObject<TValue>, IProps
     {
         #region Members
 
-        public bool IsDirty { get; private set; }
-
-        public bool IsNew { get; private set; }
+        public Tracking Tracking { get; private set; }
 
         private ValidatorRules<ValueObject<TValue>> _validatorRules = new ValidatorRules<ValueObject<TValue>>();
 
@@ -30,13 +29,13 @@ namespace BeyondNet.Ddd
         /// <summary>
         /// Gets or sets the value of the value object.
         /// </summary>
-        public TValue Value
+        protected TValue Value
         {
             get
             {
                 return (TValue)GetValue();
             }
-            set => SetValue(value!);
+            //private set => SetValue(value!);
         }
 
         #endregion
@@ -53,7 +52,7 @@ namespace BeyondNet.Ddd
 
             RegisterProperty(nameof(Value), typeof(TValue), value, ValuePropertyChanged);
 
-            IsNew = true;
+            Tracking = Tracking.MarkNew();
 
             AddValidators();
 
@@ -65,12 +64,23 @@ namespace BeyondNet.Ddd
 
         #region Methods
 
-        private void ValuePropertyChanged(NotifyPropertyChangedBase sender, NotifyPropertyChangedContextArgs e)
+        private void ValuePropertyChanged(AbstractNotifyPropertyChanged sender, NotifyPropertyChangedContextArgs e)
         {
-            IsDirty = true;
-            IsNew = false;
+           Tracking = Tracking.MarkDirty();
 
-            Validate();
+           Validate();
+        }
+
+        public void SetValue(TValue value)
+        {
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
+
+            SetValue(value, nameof(Value));
+        }
+
+        public TValue GetValue()
+        {
+            return (TValue)GetValue(nameof(Value));
         }
 
         #endregion
@@ -165,6 +175,11 @@ namespace BeyondNet.Ddd
         public ValueObject<TValue> GetCopy()
         {
             return (ValueObject<TValue>)MemberwiseClone();
+        }
+
+        public object Clone()
+        {
+            return GetCopy();
         }
 
 

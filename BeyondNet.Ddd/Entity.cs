@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using BeyondNet.Ddd.Extensions;
 using BeyondNet.Ddd.Rules.Impl;
 using BeyondNet.Ddd.Impl;
+using BeyondNet.Ddd.Rules.PropertyChange;
 
 namespace BeyondNet.Ddd
 {
@@ -21,17 +22,31 @@ namespace BeyondNet.Ddd
 
         public BrokenRules _brokenRules = new BrokenRules();
 
-        public Tracking Tracking = new Tracking().MarkDefault();
+        public Tracking Tracking = new Tracking();
 
         #endregion
 
         #region Properties
 
-        protected TProps Props { get; set; }
+        private TProps? _props;
+
+        private TProps Props
+        {
+            get { return _props!; }
+            set
+            {
+                _props = value;
+            }
+        }
+
 
         public int Version { get; private set; }
 
         public bool IsValid => !_brokenRules.GetBrokenRules().Any();
+
+        public bool IsNew() => Tracking.IsNew;
+
+        public bool IsDirty() => Tracking.IsDirty;
 
         #endregion
 
@@ -49,16 +64,29 @@ namespace BeyondNet.Ddd
 
             Validate();
 
+            Tracking = Tracking.MarkNew();
         }
 
         #endregion
 
+
         #region Methods
         public TProps GetPropsCopy()
         {
-            var copyProps = Props.Clone();
+            var copyProps = this.Props.Clone();
 
             return (TProps)copyProps;
+        }
+
+        public TProps GetProps()
+        {
+            return Props;
+        }
+
+        public void SetProps(TProps props)
+        {
+            Props = props;
+            Tracking = Tracking.MarkDirty(props);
         }
 
 
@@ -97,13 +125,16 @@ namespace BeyondNet.Ddd
 
         public void Validate()
         {
-            var entityBrokenRules = _validatorRules.GetBrokenRules();
+            _brokenRules.Add(_validatorRules.GetBrokenRules().ToList());
 
-            var valueObjectBrokenRules = GetType().GetProperties().GetPropertiesBrokenRules(this);
+            var props = GetPropsCopy().GetType().GetProperties();
 
-            var result = entityBrokenRules.Concat(valueObjectBrokenRules).ToList().AsReadOnly();
+            var propsBrokenRules = props.GetPropertiesBrokenRules(this.Props);
 
-            _brokenRules.Add(result);
+            if (propsBrokenRules.Any())
+            {
+                _brokenRules.Add(propsBrokenRules);
+            }            
         }
 
         public virtual void AddValidators() { }

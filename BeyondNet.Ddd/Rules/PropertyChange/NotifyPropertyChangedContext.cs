@@ -15,7 +15,7 @@
             PropertyChangedCallback += notifyPropertyChangedHandler;
         }
 
-        internal void InvokePropertyChangedCallback(NotifyPropertyChangedBase sender, NotifyPropertyChangedContextArgs e)
+        internal void InvokePropertyChangedCallback(AbstractNotifyPropertyChanged sender, NotifyPropertyChangedContextArgs e)
         {
             PropertyChangedCallback?.Invoke(sender, e);
         }

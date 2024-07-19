@@ -47,37 +47,37 @@ namespace MyPlanner.Projects.Domain
 
         public void UpdateName(Name name)
         {
-            Props.Name = name;
+            GetProps().Name = name;
         }
 
         public void UpdateDescription(Description description)
         {
-            Props.Description = description;
+            GetProps().Description = description;
         }
 
         public void UpdatePriority(Priority priority)
         {
-            Props.Priority = priority;
+            GetProps().Priority = priority;
         }
 
         public void ToDo()
         {
-            Props.Status = BackLogFeatureStatus.ToDo;
+            GetProps().Status = BackLogFeatureStatus.ToDo;
         }
 
         public void InProgress()
         {
-            Props.Status = BackLogFeatureStatus.InProgress;
+            GetProps().Status = BackLogFeatureStatus.InProgress;
         }
 
         public void OnHold()
         {
-            Props.Status = BackLogFeatureStatus.OnHold;
+            GetProps().Status = BackLogFeatureStatus.OnHold;
         }
 
         public void Done()
         {
-            Props.Status = BackLogFeatureStatus.Done;
+            GetProps().Status = BackLogFeatureStatus.Done;
         }
     }
 

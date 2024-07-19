@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace BeyondNet.Ddd.Rules.PropertyChange
 {
-    public delegate void NotifyPropertyChangedHandler(NotifyPropertyChangedBase sender, NotifyPropertyChangedContextArgs e);
+    public delegate void NotifyPropertyChangedHandler(AbstractNotifyPropertyChanged sender, NotifyPropertyChangedContextArgs e);
 
-    public class NotifyPropertyChangedBase : INotifyPropertyChanged
+    public class AbstractNotifyPropertyChanged : INotifyPropertyChanged
     {
         #region Members
 
@@ -21,7 +21,7 @@ namespace BeyondNet.Ddd.Rules.PropertyChange
 
         #region Constructors
 
-        protected NotifyPropertyChangedBase()
+        protected AbstractNotifyPropertyChanged()
         {
             IsCallbackInvokingEnabled = true;
             IsEventInvokingEnabled = true;

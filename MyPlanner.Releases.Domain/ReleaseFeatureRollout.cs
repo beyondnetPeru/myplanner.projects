@@ -37,12 +37,12 @@ namespace MyPlanner.Releases.Domain
 
         public void UpdateCountry(StringValueObject country)
         {
-            Props.Country = country;
+            GetProps().Country = country;
         }
 
         public void UpdateDate(DateTime date)
         {
-            Props.RegisterDate = date;
+            GetProps().RegisterDate = date;
         }
     }
 }

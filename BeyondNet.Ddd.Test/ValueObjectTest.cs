@@ -11,8 +11,8 @@ namespace BeyondNet.Ddd.Test
         {
             var fieldName = FieldName.Create("foo");
 
-            Assert.IsTrue(fieldName.IsNew);
-            Assert.IsFalse(fieldName.IsDirty);
+            Assert.IsTrue(fieldName.Tracking.IsNew);
+            Assert.IsFalse(fieldName.Tracking.IsDirty);
         }
 
         [TestMethod]
@@ -20,10 +20,10 @@ namespace BeyondNet.Ddd.Test
         {
             var fieldName = FieldName.Create("foo");
 
-            fieldName.Value = "bar";
+            fieldName.SetValue("demo");
 
-            Assert.IsTrue(fieldName.IsDirty);
-            Assert.IsFalse(fieldName.IsNew);
+            Assert.IsTrue(fieldName.Tracking.IsDirty);
+            Assert.IsFalse(fieldName.Tracking.IsNew);
         }
 
 
@@ -113,7 +113,7 @@ namespace BeyondNet.Ddd.Test
         {
             var vo = FieldRequired.Create("foo");
 
-            vo.Value = "";
+            vo.SetValue("");
 
             Assert.IsFalse(vo.IsValid);
         }
@@ -123,7 +123,7 @@ namespace BeyondNet.Ddd.Test
         {
             var vo = FieldRequired.Create("foo");
 
-            vo.Value = "bar";
+            vo.SetValue("bar");
 
             Assert.IsTrue(vo.IsValid);
         }

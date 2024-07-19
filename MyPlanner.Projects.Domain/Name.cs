@@ -34,7 +34,7 @@ namespace MyPlanner.Projects.Domain
 
         public override void AddRules(RuleContext context)
         {
-            if (Subject!.Value.ToString()!.Length < 3 && Subject!.Value.ToString()!.Length > 300)
+            if (Subject!.GetValue().ToString()!.Length < 3 && Subject!.GetValue().ToString()!.Length > 300)
             {
                 AddBrokenRule("Value", "Value must be between 3 and 300 characters");
             }

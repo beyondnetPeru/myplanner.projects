@@ -73,7 +73,10 @@ namespace BeyondNet.Ddd.Extensions
 
                         var brokenRules = (ReadOnlyCollection<BrokenRule>)method.Invoke(valueObject, null)!;
 
-                        result.AddRange(brokenRules);
+                        if (brokenRules.Any())
+                        {
+                            result.AddRange(brokenRules);
+                        }
                     }
                 }
             }

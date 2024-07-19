@@ -57,8 +57,8 @@ namespace MyPlanner.Releases.Domain
     {
         private Release(ReleaseProps props) : base(props)
         {
-            if (this.Tracking.IsNew)
-                AddDomainEvent(new ReleaseCreatedDomainEvent(props.Name.Value, props.Description!.Value));
+            if (this.IsNew())
+                AddDomainEvent(new ReleaseCreatedDomainEvent(props.Name.GetValue(), props.Description!.GetValue()));
         }
 
         public static Release Create(IdValueObject id, Name name)
@@ -76,7 +76,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Name = name;
+            GetProps().Name = name;
         }
 
         public void ChangeDescription(Description description)
@@ -87,7 +87,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Description = description;
+            GetProps().Description = description;
         }
 
         public void SetPeriod(DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate)
@@ -98,8 +98,8 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.StartDate = startDate;
-            Props.EndDate = endDate;
+            GetProps().StartDate = startDate;
+            GetProps().EndDate = endDate;
         }
 
         public void Open()
@@ -110,9 +110,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseStatus.Open;
+            GetProps().Status = ReleaseStatus.Open;
 
-            AddDomainEvent(new ReleaseOpenedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
+            AddDomainEvent(new ReleaseOpenedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
         }
 
         public void Schedule(ReleaseGoLiveDate goLiveDate)
@@ -123,10 +123,10 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.GoLiveDate = goLiveDate;
-            Props.Status = ReleaseStatus.Scheduled;
+            GetProps().GoLiveDate = goLiveDate;
+            GetProps().Status = ReleaseStatus.Scheduled;
 
-            AddDomainEvent(new ReleaseScheduledDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value, GetPropsCopy().GoLiveDate!.Value));
+            AddDomainEvent(new ReleaseScheduledDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue(), GetPropsCopy().GoLiveDate!.GetValue()));
         }
 
         public void Close()
@@ -137,9 +137,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseStatus.Closed;
+            GetProps().Status = ReleaseStatus.Closed;
 
-            AddDomainEvent(new ReleaseClosedDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
+            AddDomainEvent(new ReleaseClosedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
         }
 
         public void OnHold()
@@ -150,9 +150,9 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Status = ReleaseStatus.OnHold;
+            GetProps().Status = ReleaseStatus.OnHold;
 
-            AddDomainEvent(new ReleaseOnHoldDomainEvent(GetPropsCopy().Id.Value, GetPropsCopy().Name.Value));
+            AddDomainEvent(new ReleaseOnHoldDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
         }
 
         public void SetOwner(Owner owner)
@@ -163,7 +163,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Owner = owner;
+            GetProps().Owner = owner;
         }
 
         public void SetVersion(ReleaseVersion version)
@@ -174,7 +174,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.VersionNumber = version;
+            GetProps().VersionNumber = version;
         }
 
 
@@ -186,7 +186,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.GoLiveDate = goLiveDate;
+            GetProps().GoLiveDate = goLiveDate;
         }
 
         public void ClearGoLiveDate()
@@ -207,7 +207,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Features?.Add(feature);
+            GetProps().Features?.Add(feature);
         }
 
         public void RemoveFeature(ReleaseFeature feature)
@@ -218,7 +218,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            var exists = Props.Features?.Any(f => f == feature);
+            var exists = GetPropsCopy().Features?.Any(f => f == feature);
 
             if (!exists.HasValue || !exists.Value)
             {
@@ -226,7 +226,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Features?.Remove(feature);
+            GetProps().Features?.Remove(feature);
 
         }
 
@@ -238,7 +238,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.References?.Add(reference);
+            GetProps().References?.Add(reference);
 
         }
 
@@ -250,7 +250,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            var exists = Props.References?.Any(r => r == reference);
+            var exists = GetPropsCopy().References?.Any(r => r == reference);
 
             if (!exists.HasValue || !exists.Value)
             {
@@ -258,7 +258,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.References?.Remove(reference);
+            GetProps().References?.Remove(reference);
         }
 
         public void AddComment(ReleaseComment comment)
@@ -269,7 +269,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Comments?.Add(comment);
+            GetProps().Comments?.Add(comment);
         }
 
         public void RemoveComment(ReleaseComment comment)
@@ -280,7 +280,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            var exists = Props.Comments?.Any(c => c == comment);
+            var exists = GetPropsCopy().Comments?.Any(c => c == comment);
 
             if (!exists.HasValue || !exists.Value)
             {
@@ -288,7 +288,7 @@ namespace MyPlanner.Releases.Domain
                 return;
             }
 
-            Props.Comments?.Remove(comment);
+            GetProps().Comments?.Remove(comment);
         }
     };
 

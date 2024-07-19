@@ -11,7 +11,7 @@ namespace BeyondNet.Ddd.Test
         {
             Priority priority = 1;
             priority += 1;
-            Assert.AreEqual(2, priority.Value);
+            Assert.AreEqual(2, priority.GetValue());
         }
 
         [TestMethod]
@@ -19,7 +19,7 @@ namespace BeyondNet.Ddd.Test
         {
             Priority priority = 1;
             priority -= 1;
-            Assert.AreEqual(0, priority.Value);
+            Assert.AreEqual(0, priority.GetValue());
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace BeyondNet.Ddd.Test
         {
             Priority priority = 1;
             priority++;
-            Assert.AreEqual(2, priority.Value);
+            Assert.AreEqual(2, priority.GetValue());
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace BeyondNet.Ddd.Test
         {
             Priority priority = 1;
             priority--;
-            Assert.AreEqual(0, priority.Value);
+            Assert.AreEqual(0, priority.GetValue());
         }
 
         [TestMethod]
