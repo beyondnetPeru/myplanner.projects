@@ -13,6 +13,5 @@ namespace MyPlanner.Projects.Domain
         public ProjectRiskLevel(int id, string name) : base(id, name)
         {
         }
-
-    }
+     }
 }

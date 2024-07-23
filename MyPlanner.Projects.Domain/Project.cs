@@ -6,23 +6,23 @@ using MyPlanner.Projects.Domain.DomainEvents;
 
 namespace MyPlanner.Projects.Domain
 {
+    #region Props
     public class ProjectProps : IProps
     {
-
-        public IdValueObject Id { get; set; }
-        public Track? Track { get; set; }
-        public Product? Product { get; set; }
-        public Name Name { get; set; }
-        public Description? Description { get; set; }
-        public ProjectRiskLevel? RiskLevel { get; set; }
-        public List<ProjectBacklog>? Backlogs { get; set; }
-        public Price? Budget { get; set; }
-        public List<Price>? ExtraBudget { get; set; }
-        public List<ProjectScope>? Scopes { get; set; }
-        public Owner? Owner { get; set; }
-        public List<Stakeholder>? StakeHolders { get; set; }
+        public IdValueObject Id { get; private set; }
+        public Track Track { get; private set; }
+        public Product Product { get; private set; }
+        public Name Name { get; private set; }
+        public Description Description { get; private set; }
+        public ProjectRiskLevel RiskLevel { get; set; }
+        public Price Budget { get; private set; }
+        public Owner Owner { get; private set; }
+        public ICollection<ProjectBacklog> Backlogs { get; private set; } = new List<ProjectBacklog>();
+        public ICollection<Price> ExtraBudget { get; private set; } = new List<Price>();
+        public ICollection<ProjectScope> Scopes { get; private set; } = new List<ProjectScope>();
+        public ICollection<ProjectStakeholder> StakeHolders { get; private set; } = new List<ProjectStakeholder>();
         public ProjectStatus Status { get; set; }
-        public Audit Audit { get; set; }
+        public Audit Audit { get; private set; }
 
         public ProjectProps(IdValueObject id, Name name)
         {
@@ -52,10 +52,11 @@ namespace MyPlanner.Projects.Domain
 
         }
     }
-
-    public class Project : Entity<Project, ProjectProps>
+    
+    #endregion
+    
+    public class Project : Entity<Project, ProjectProps>, IAggregateRoot
     {
-
         #region Constructors
 
         private Project(ProjectProps props) : base(props)
@@ -80,7 +81,7 @@ namespace MyPlanner.Projects.Domain
         #endregion
 
         #region Methods
-
+        
         public void UpdateTrack(Track track)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
@@ -88,7 +89,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Track = track;
+            props.Track.SetValue(track.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
@@ -101,7 +102,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
             
-            props.Name = name;
+            props.Name.SetValue(name.GetValue());
             props.Audit.Update("default");
             
             SetProps(props);
@@ -114,7 +115,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
             
-            props.Description = description;
+            props.Description.SetValue(description.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
@@ -142,7 +143,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Budget = budget;
+            props.Budget.SetValue(budget.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
@@ -155,7 +156,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Owner = owner;
+            props.Owner.SetValue(owner.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
@@ -240,7 +241,7 @@ namespace MyPlanner.Projects.Domain
 
         public void AddScope(ProjectScope scope)
         {
-            if (GetPropsCopy().Scopes!.Any(x => x.GetValue().Description.ToString()!.Equals(scope.GetValue().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().Scopes!.Any(x => x.GetPropsCopy().Description.ToString()!.Equals(scope.GetPropsCopy().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
 
             var props = GetProps();
@@ -253,7 +254,7 @@ namespace MyPlanner.Projects.Domain
 
         public void RemoveScope(ProjectScope scope)
         {
-            if (GetPropsCopy().Scopes!.Any(x => x.GetValue().Description.ToString().ToLower()!.Equals(scope.GetValue().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().Scopes!.Any(x => x.GetPropsCopy().Description.ToString().ToLower()!.Equals(scope.GetPropsCopy().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 var props = GetProps();
                 
@@ -271,7 +272,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
             
-            props.Budget = budget;
+            props.Budget.SetValue(budget.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
@@ -290,9 +291,9 @@ namespace MyPlanner.Projects.Domain
             SetProps(props);
         }
 
-        public void AddStakeholder(Stakeholder stakeholder)
+        public void AddStakeholder(ProjectStakeholder stakeholder)
         {
-            if (GetPropsCopy().StakeHolders!.Any(x => x.GetValue().Name.ToString()!.Equals(stakeholder.GetValue().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().StakeHolders!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(stakeholder.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
 
             var props = GetProps();
@@ -303,9 +304,9 @@ namespace MyPlanner.Projects.Domain
             SetProps(props);
         }
 
-        public void RemoveStakeholder(Stakeholder stakeholder)
+        public void RemoveStakeholder(ProjectStakeholder stakeholder)
         {
-            if (GetPropsCopy().StakeHolders!.Any(x => x.GetValue().Name.ToString().ToLower()!.Equals(stakeholder.GetValue().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (GetPropsCopy().StakeHolders!.Any(x => x.GetPropsCopy().Name.ToString().ToLower()!.Equals(stakeholder.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 var props = GetProps();
                 

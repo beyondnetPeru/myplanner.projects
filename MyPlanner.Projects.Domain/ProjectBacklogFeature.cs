@@ -7,22 +7,28 @@ namespace MyPlanner.Projects.Domain
 {
     public class ProjectBackLogFeatureProps : IProps
     {
-        public Name Name { get; set; }
-        public Description? Description { get; set; }
-        public Priority? Priority { get; set; }
+        public IdValueObject Id { get; private set; }
+        public Name Name { get; private set; }
+        public ProjectBacklog Backlog { get; private set; }
+        public IdValueObject BacklogId { get; private set; }
+        public Description Description { get; private set; }
+        public Priority Priority { get; set; }
         public BackLogFeatureStatus Status { get; set; }
 
-        public ProjectBackLogFeatureProps(Name name)
+        public ProjectBackLogFeatureProps(IdValueObject id,  ProjectBacklog backlog, Name name, Priority priority)
         {
+            Id = id;
+            Backlog = backlog;
+            BacklogId = backlog.GetPropsCopy().Id;
             Name = name;
             Description = Description.DefaultValue;
-            Priority = Priority.DefaultValue;
+            Priority = priority;
             Status = BackLogFeatureStatus.ToDo;
         }
 
         public object Clone()
         {
-            return new ProjectBackLogFeatureProps(Name)
+            return new ProjectBackLogFeatureProps(Id, Backlog, Name, Priority)
             {
                 Description = Description,
                 Priority = Priority,
@@ -38,21 +44,21 @@ namespace MyPlanner.Projects.Domain
         {
         }
 
-        public static ProjectBackLogFeature Create(Name name)
+        public static ProjectBackLogFeature Create(ProjectBacklog backlog, IdValueObject id, Name name, Priority priority)
         {
-            var props = new ProjectBackLogFeatureProps(name);
+            var props = new ProjectBackLogFeatureProps(id, backlog, name, priority);
 
             return new ProjectBackLogFeature(props);
         }
 
         public void UpdateName(Name name)
         {
-            GetProps().Name = name;
+            GetProps().Name.SetValue(name.GetValue());
         }
 
         public void UpdateDescription(Description description)
         {
-            GetProps().Description = description;
+            GetProps().Description.SetValue(description.GetValue());
         }
 
         public void UpdatePriority(Priority priority)

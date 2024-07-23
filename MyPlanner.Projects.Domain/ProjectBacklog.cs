@@ -1,27 +1,36 @@
 ﻿using BeyondNet.Ddd;
 using BeyondNet.Ddd.Interfaces;
+using BeyondNet.Ddd.ValueObjects;
 
 namespace MyPlanner.Projects.Domain
 {
     public class ProjectBacklogProps : IProps
     {
-        public Name Name { get; set; }
-        public Description Description { get; set; } = Description.DefaultValue;
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public List<ProjectBackLogFeature> Features { get; set; } = new List<ProjectBackLogFeature>();
+        public IdValueObject Id { get; set; }
+        public IdValueObject ProjectId { get; private set; }
+        public Project Project { get; private set; }
+        public Name Name { get; private set; }
+        public Description Description { get; private set; } = Description.DefaultValue;
+        public DateTimeUtcValueObject StartDate { get; private set; }
+        public DateTimeUtcValueObject EndDate { get; private set; }
+        public ICollection<ProjectBackLogFeature> Features { get; private set; } = new List<ProjectBackLogFeature>();
         public ProjectBacklogStatus Status { get; set; }
 
-        public ProjectBacklogProps(Name name)
+        public ProjectBacklogProps(IdValueObject id,Project project, Name name)
         {
+            Id = id;
+            Project = project;
+            ProjectId = project.GetPropsCopy().Id;
             Name = name;
-
+            Description = Description.DefaultValue;
+            StartDate = DateTimeUtcValueObject.Create(DateTime.UtcNow);
+            EndDate = DateTimeUtcValueObject.Create(DateTime.UtcNow);
             Status = ProjectBacklogStatus.NotStarted;
         }
 
         public object Clone()
         {
-            return new ProjectBacklogProps(Name)
+            return new ProjectBacklogProps(Id, Project, Name)
             {
                 Description = Description,
                 StartDate = StartDate,
@@ -39,30 +48,30 @@ namespace MyPlanner.Projects.Domain
 
         }
 
-        public static ProjectBacklog Create(Name name, DateTime startDate, DateTime endDate)
+        public static ProjectBacklog Create(IdValueObject id, Project project, Name name)
         {
-            var props = new ProjectBacklogProps(name)
-            {
-                StartDate = startDate,
-                EndDate = endDate
-            };
+            var props = new ProjectBacklogProps(id, project, name);
 
             return new ProjectBacklog(props);
         }
 
         public void UpdateName(Name name)
         {
-            GetProps().Name = name;
+            GetProps().Name.SetValue(name.GetValue());
         }
 
-        public void UpdateStartDate(DateTime startDate)
+        public void UpdateStartDate(DateTimeUtcValueObject startDate)
         {
-            GetProps().StartDate = startDate;
+            GetProps().StartDate.SetValue(startDate.GetValue());
         }
 
-        public void UpdateEndDate(DateTime endDate)
+        public void UpdateEndDate(DateTimeUtcValueObject endDate)
         {
-            GetProps().EndDate = endDate;
+            GetProps().EndDate.SetValue(endDate.GetValue());
+        }
+        public void UpdateDescription(Description description)
+        {
+            GetProps().Description.SetValue(description.GetValue());
         }
 
         public void AddFeature(ProjectBackLogFeature feature)

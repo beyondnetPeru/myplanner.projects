@@ -5,13 +5,13 @@ using System.Collections.ObjectModel;
 using BeyondNet.Ddd.Extensions;
 using BeyondNet.Ddd.Rules.Impl;
 using BeyondNet.Ddd.Impl;
-using BeyondNet.Ddd.Rules.PropertyChange;
 
 namespace BeyondNet.Ddd
 {
-    public abstract class Entity<TEntity, TProps> : IEntity<TEntity, TProps>
-        where TEntity : Entity<TEntity, TProps>
-        where TProps : class, IProps
+    
+
+    public abstract class Entity<TEntity, TProps> : IEntity<TEntity, TProps> where TEntity : Entity<TEntity, TProps>
+            where TProps : class, IProps
     {
         #region Members         
 
@@ -134,7 +134,7 @@ namespace BeyondNet.Ddd
             if (propsBrokenRules.Any())
             {
                 _brokenRules.Add(propsBrokenRules);
-            }            
+            }
         }
 
         public virtual void AddValidators() { }

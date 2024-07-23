@@ -4,7 +4,7 @@ namespace MyPlanner.Projects.Domain
 {
     public class Track : ValueObject<string>
     {
-        public Track(string value) : base(value)
+        private Track(string value) : base(value)
         {
         }
 
