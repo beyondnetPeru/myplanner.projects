@@ -11,6 +11,7 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
             var api = app.MapGroup("api/projects").HasApiVersion(1.0);
 
             api.MapGet("/orders", GetOrdersByUserAsync);
+            api.MapGet("/orders/{id}", GetOrderByIdAsync);
 
 
             return api;
