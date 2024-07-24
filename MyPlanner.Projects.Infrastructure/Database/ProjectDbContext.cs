@@ -32,6 +32,7 @@ namespace MyPlanner.Projects.Infrastructure.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("myplanner-projects");
+            modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new BacklogEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());

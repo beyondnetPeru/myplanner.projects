@@ -35,10 +35,11 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
         }
 
         public static async Task<Results<Ok, BadRequest<string>>> CreateOrderAsync(
-        [FromHeader(Name = "x-requestid")] Guid requestId,
+        //[FromHeader(Name = "x-requestid")] Guid requestId,
         CreateProjectDto request,
         [AsParameters] ProjectServices services)
         {
+            var requestId = Guid.NewGuid();
 
             //mask the credit card number
 
@@ -82,4 +83,8 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
             }
         }
     }
+
+    public record CreateProjectRequest(
+    string UserId,
+    string Name);
 }
