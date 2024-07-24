@@ -10,7 +10,7 @@ namespace BeyondNet.Ddd
     /// Base class for value objects in the domain-driven design.
     /// </summary>
     /// <typeparam name="TValue">The type of the value object.</typeparam>
-    public abstract class ValueObject<TValue> : AbstractNotifyPropertyChanged, IValueObject<TValue>, IProps
+    public abstract class ValueObject<TValue> : AbstractNotifyPropertyChanged, IProps
     {
         #region Members
 

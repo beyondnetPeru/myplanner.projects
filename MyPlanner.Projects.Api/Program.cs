@@ -19,6 +19,7 @@ app.MapDefaultEndpoints();
 var projects = app.NewVersionedApi("Projects");
 
 projects.MapProjectApiV1();
+         //.RequireAuthorization(); 
 
 app.UseDefaultOpenApi();
 app.Run();

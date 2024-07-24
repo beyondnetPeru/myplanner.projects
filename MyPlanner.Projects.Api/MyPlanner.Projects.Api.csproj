@@ -16,10 +16,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.7.0" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MyPlanner.EventBus\MyPlanner.EventBus.csproj" />
     <ProjectReference Include="..\MyPlanner.Projects.Domain\MyPlanner.Projects.Domain.csproj" />
     <ProjectReference Include="..\MyPlanner.Projects.Infrastructure\MyPlanner.Projects.Infrastructure.csproj" />
     <ProjectReference Include="..\MyPlanner.Shared\MyPlanner.Shared.csproj" />

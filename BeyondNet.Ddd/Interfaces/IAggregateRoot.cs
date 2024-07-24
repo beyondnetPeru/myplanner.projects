@@ -1,4 +1,9 @@
-﻿namespace BeyondNet.Ddd.Interfaces
+﻿using MediatR;
+
+namespace BeyondNet.Ddd.Interfaces
 {
-    public interface IAggregateRoot { }
+    public interface IAggregateRoot {
+
+      
+    }
 }

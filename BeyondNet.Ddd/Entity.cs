@@ -10,7 +10,7 @@ namespace BeyondNet.Ddd
 {
     
 
-    public abstract class Entity<TEntity, TProps> : IEntity<TEntity, TProps> where TEntity : Entity<TEntity, TProps>
+    public abstract class Entity<TEntity, TProps> where TEntity : Entity<TEntity, TProps>
             where TProps : class, IProps
     {
         #region Members         
@@ -103,6 +103,11 @@ namespace BeyondNet.Ddd
         #endregion
 
         #region DomainEvents                        
+
+        public IReadOnlyCollection<INotification> GetDomainEvents()
+        {
+            return DomainEvents.ToList().AsReadOnly();
+        }
 
         public void AddDomainEvent(INotification eventItem)
         {

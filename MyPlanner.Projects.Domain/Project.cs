@@ -2,6 +2,7 @@
 using BeyondNet.Ddd;
 using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
+using MediatR;
 using MyPlanner.Projects.Domain.DomainEvents;
 
 namespace MyPlanner.Projects.Domain

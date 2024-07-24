@@ -1,62 +1,28 @@
 ﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using MyPlanner.IntegrationEventLogEF.Services;
-using MyPlanner.Projects.Api.Application.Services;
-using MyPlanner.Projects.Api.Application.UseCases.Queries;
-using MyPlanner.Projects.Domain;
-using MyPlanner.Projects.Infrastructure.Database;
-using MyPlanner.Projects.Infrastructure.Repositories;
-using MyPlanner.Shared.Application.Behaviors;
+
 
 namespace MyPlanner.Projects.Api.Application.Extensions
 {
-    internal static class ApplicationBuilderExtensions
+    public static partial class ApplicationBuilderDefaultExtensions
     {
-        public static void AddApplicationServices(this IHostApplicationBuilder builder)
-        {
-            var services = builder.Services;
-
-            services.AddDbContext<ProjectDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<ProjectDbContext>>();
-
-            services.AddTransient<IProjectIntegrationEventService, ProjectIntegrationEventService>();
-         
-            services.AddHttpContextAccessor();
-
-            services.AddAutoMapper(typeof(Program).Assembly);
-
-            services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
-
-                cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-                cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
-            });
-
-            // Register the command validators for the validator behavior (validators based on FluentValidation library)
-            //services.AddSingleton<IValidator<CancelOrderCommand>, CancelOrderCommandValidator>();
-
-            services.AddScoped<IProjectQueries, ProjectQueries>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
-        }
-
-        private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)
-        {
-            //eventBus.AddSubscription<IntegrationEvent, IntegrationEventHandler>();
-        }
-
         public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
         {
             // Enable Semantic Kernel OpenTelemetry
             AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
 
             builder.AddBasicServiceDefaults();
+
+            builder.Services.AddServiceDiscovery();
+
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                // Turn on resilience by default
+                http.AddStandardResilienceHandler();
+
+                // Turn on service discovery by default
+                http.AddServiceDiscovery();
+            });
 
             return builder;
         }
@@ -74,7 +40,6 @@ namespace MyPlanner.Projects.Api.Application.Extensions
 
             return builder;
         }
-
 
         public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
         {

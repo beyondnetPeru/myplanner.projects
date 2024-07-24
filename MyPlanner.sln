@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Releases", "Releases", "{AE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyPlanner.Releases.Domain", "MyPlanner.Releases.Domain\MyPlanner.Releases.Domain.csproj", "{4EA508A2-5CA7-46EA-9467-21E7CECB32E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyPlanner.Projects.Infrastructure", "MyPlanner.Projects.Infrastructure\MyPlanner.Projects.Infrastructure.csproj", "{EECA6A0B-8B9E-4663-8B8E-384744648E1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyPlanner.Projects.Infrastructure", "MyPlanner.Projects.Infrastructure\MyPlanner.Projects.Infrastructure.csproj", "{EECA6A0B-8B9E-4663-8B8E-384744648E1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyPlanner.IntegrationEventLogEF", "MyPlanner.IntegrationEventLogEF\MyPlanner.IntegrationEventLogEF.csproj", "{E06B9696-A366-4917-A71D-E6CFA65C13AA}"
 EndProject
