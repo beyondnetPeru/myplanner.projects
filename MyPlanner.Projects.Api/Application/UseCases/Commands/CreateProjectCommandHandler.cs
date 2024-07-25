@@ -1,4 +1,6 @@
-﻿using BeyondNet.Ddd.ValueObjects;
+﻿using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
+using BeyondNet.Ddd.ValueObjects;
 using MediatR;
 using MyPlanner.Projects.Api.Application.IntegrationEvents.Events;
 using MyPlanner.Projects.Api.Application.Services;
@@ -36,7 +38,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands
 
             await projectRepository.Add(project);
 
-            return await projectRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken); 
+            return await projectRepository.UnitOfWork.SaveEntitiesAsync(project, cancellationToken); 
         }
     }
 }

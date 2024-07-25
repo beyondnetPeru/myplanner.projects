@@ -9,31 +9,20 @@ namespace MyPlanner.Projects.Domain
     {
         public IdValueObject Id { get; set; }
         public Name Name { get; set; }
-        public Description Description { get; set; }
-        public StringValueObject Rol { get; set; }
-        public Email Email { get; set; }
         public Project Project { get; set; }
         public IdValueObject ProjectId { get; set; }
 
-        public ProjectStakeHolderProsp(IdValueObject id, Project project, Name name, Email email)
+        public ProjectStakeHolderProsp(IdValueObject id, Project project, Name name)
         {
             Id = id;
             Project = project;
             ProjectId = project.GetPropsCopy().Id;
             Name = name;
-            Description = Description.Create(string.Empty);
-            Rol = StringValueObject.Create(string.Empty);
-            Email = email;
         }
 
         public object Clone()
         {
-            return new ProjectStakeHolderProsp(Id, Project, Name, Email)
-            {
-                Description = Description,
-                Rol = Rol
-
-            };
+            return new ProjectStakeHolderProsp(Id, Project, Name);
         }
     }
 
@@ -43,32 +32,14 @@ namespace MyPlanner.Projects.Domain
         {
         }
 
-        public static ProjectStakeholder Create(IdValueObject id, Project project, Name name, Email email)
+        public static ProjectStakeholder Create(IdValueObject id, Project project, Name name)
         {
-            var props = new ProjectStakeHolderProsp(id, project, name, email);
-
-            return new ProjectStakeholder(props);
+            return new ProjectStakeholder(new ProjectStakeHolderProsp(id, project, name));
         }
 
         public void UpdateName(Name name)
         {
             GetProps().Name.SetValue(name.GetValue());
         }
-
-        public void UpdateDescription(Description description)
-        {
-            GetProps().Description.SetValue(description.GetValue());
-        }
-
-        public void UpdateRol(StringValueObject rol)
-        {
-            GetProps().Rol.SetValue(rol.GetValue());
-        }
-
-        public void UpdateEmail(Email email)
-        {
-            GetProps().Email.SetValue(email.GetValue());
-        }
-
     }
 }

@@ -7,5 +7,6 @@
         public ProjectTable Project { get; set; }
         public string Description { get; set; }
         public DateTime RegisterDate { get; set; }
+        public AuditTable Audit { get; set; }
     }
 }

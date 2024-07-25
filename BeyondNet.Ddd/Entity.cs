@@ -10,7 +10,8 @@ namespace BeyondNet.Ddd
 {
     
 
-    public abstract class Entity<TEntity, TProps> where TEntity : Entity<TEntity, TProps>
+    public abstract class Entity<TEntity, TProps> 
+            where TEntity : Entity<TEntity, TProps>
             where TProps : class, IProps
     {
         #region Members         

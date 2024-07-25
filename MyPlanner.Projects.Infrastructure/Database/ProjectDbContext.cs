@@ -1,9 +1,11 @@
-﻿using BeyondNet.Ddd.Interfaces;
+﻿using BeyondNet.Ddd;
+using BeyondNet.Ddd.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MyPlanner.Projects.Infrastructure.Database.Configurations;
 using MyPlanner.Projects.Infrastructure.Database.Tables;
+using MyPlanner.Projects.Infrastructure.Extensions;
 using MyPlanner.Shared.Infrastructure.Database.Extensions;
 using System.Data;
 
@@ -32,16 +34,20 @@ namespace MyPlanner.Projects.Infrastructure.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("myplanner-projects");
-            modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
+
             modelBuilder.ApplyConfiguration(new ProjectEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new BacklogEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new StakeHolderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new BudgetEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
+            
             modelBuilder.UseIntegrationEventLogs();
         }
 
-        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+
+        public async Task<bool> SaveEntitiesAsync(object entity, CancellationToken cancellationToken = default) 
         {
             // Dispatch Domain Events collection. 
             // Choices:
@@ -49,7 +55,7 @@ namespace MyPlanner.Projects.Infrastructure.Database
             // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
             // B) Right AFTER committing data (EF SaveChanges) into the DB will make multiple transactions. 
             // You will need to handle eventual consistency and compensatory actions in case of failures in any of the Handlers. 
-            await mediator.DispatchDomainEventsAsync(this);
+            await mediator.DispatchDomainEventsAsync(entity);
 
             // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
             // performed through the DbContext will be committed

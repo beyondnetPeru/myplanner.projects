@@ -11,5 +11,6 @@
         public DateTime EndDate { get; set; }
         public ICollection<FeatureTable> Features { get; set; } = new List<FeatureTable>();
         public int Status { get; set; }
+        public AuditTable Audit { get; set; }
     }
 }

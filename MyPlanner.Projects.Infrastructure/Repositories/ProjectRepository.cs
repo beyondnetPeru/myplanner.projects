@@ -2,6 +2,7 @@
 using BeyondNet.Ddd.Interfaces;
 using MyPlanner.Projects.Domain;
 using MyPlanner.Projects.Infrastructure.Database;
+using MyPlanner.Projects.Infrastructure.Database.Tables;
 
 namespace MyPlanner.Projects.Infrastructure.Repositories
 {
@@ -18,49 +19,91 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public Task Add(Project project)
+        public async Task<ProjectTable> FindAsync(string id)
         {
-            throw new NotImplementedException();
+            var projectTable = await context.Projects.FindAsync(id);
+
+            if (projectTable == null)
+            {
+                throw new KeyNotFoundException($"Entity \"{nameof(ProjectTable)}\" ({id}) was not found.");
+            }
+
+            return projectTable;
         }
 
-        public Task UpdateTrack(string projectId, string track)
+
+        public ProjectTable TransformEntityToTable(Project project)
         {
-            throw new NotImplementedException();
+            var projectTable = new ProjectTable();
+
+            var projectProps = project.GetPropsCopy();
+
+            projectTable.Id = projectProps.Id.GetValue();
+            projectTable.Name = projectProps.Name.GetValue();
+
+            projectTable.Audit = new AuditTable()
+            {
+                CreatedBy = projectProps.Audit.GetValue().CreatedBy,
+                CreatedAt = projectProps.Audit.GetValue().CreatedAt,
+            };
+             
+            return projectTable;
         }
 
-        public Task UpdateName(string projectId, string name)
+        public async Task Add(Project project)
         {
-            throw new NotImplementedException();
+            var projectTable = TransformEntityToTable(project);
+
+            await this.context.AddAsync(projectTable);
         }
 
-        public Task UpdateDescription(string projectId, string description)
+        public async Task UpdateName(string id, string name)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.Name = name;
         }
 
-        public Task UpdateRiskLevel(string projectId, int riskLevel)
+        public async Task UpdateTrack(string id, string track)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.Track = track;
         }
 
-        public Task UpdateBudget(string projectId, double budget)
+        public async Task UpdateDescription(string id, string description)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.Description = description;
         }
 
-        public Task UpdateOwner(string projectId, string owner)
+        public async Task UpdateOwner(string id, string owner)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.Owner = owner;
         }
 
-        public Task UpdateStatus(string projectId, int status)
+        public async Task UpdateRiskLevel(string id, int riskLevel)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.RiskLevel = riskLevel;
         }
 
-        public Task Delete(string id)
+        public async Task UpdateStatus(string id, int status)
         {
-            throw new NotImplementedException();
+            var projectTable = await FindAsync(id);
+
+            projectTable.Status = status;
         }
-    }        
+
+        public async Task Delete(string id)
+        {
+            var projectTable = await FindAsync(id);
+
+            this.context.Remove(projectTable);
+        }
+    }
 }
