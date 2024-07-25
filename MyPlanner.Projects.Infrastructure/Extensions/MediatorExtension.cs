@@ -1,9 +1,5 @@
-﻿using AutoMapper.Internal;
-using BeyondNet.Ddd;
-using BeyondNet.Ddd.Interfaces;
-using MediatR;
+﻿using MediatR;
 using System.Collections;
-using System.Reflection;
 
 namespace MyPlanner.Projects.Infrastructure.Extensions
 {
