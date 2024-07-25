@@ -45,9 +45,9 @@ namespace BeyondNet.Ddd
 
         public bool IsValid => !_brokenRules.GetBrokenRules().Any();
 
-        public bool IsNew() => Tracking.IsNew;
+        public bool IsNew => Tracking.IsNew;
 
-        public bool IsDirty() => Tracking.IsDirty;
+        public bool IsDirty => Tracking.IsDirty;
 
         #endregion
 

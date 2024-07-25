@@ -18,5 +18,7 @@ namespace BeyondNet.Ddd.ValueObjects
             yield return Value;
         }
 
+        public static StringValueObject DefaultValue => new StringValueObject(string.Empty);
+
     }
 }

@@ -25,5 +25,7 @@ namespace BeyondNet.Ddd.ValueObjects
         {
             yield return Value;
         }
+
+        public static DateTimeUtcValueObject DefaultValue => new DateTimeUtcValueObject(DateTime.UtcNow);
     }
 }

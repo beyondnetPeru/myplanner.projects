@@ -20,5 +20,7 @@ namespace BeyondNet.Ddd.ValueObjects
 
             AddValidator(new StringRequiredValidator(this));
         }
+
+        public static StringRequiredValueObject DefaultValue => new StringRequiredValueObject("Default");
     }
 }

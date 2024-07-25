@@ -17,6 +17,6 @@ namespace MyPlanner.Projects.Domain
             yield return Value;
         }
 
-        public static Product Default => new Product("Default");
+        public static Product DefaultValue => new Product("Default");
     }
 }

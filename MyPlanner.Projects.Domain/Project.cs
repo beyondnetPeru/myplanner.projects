@@ -26,6 +26,10 @@ namespace MyPlanner.Projects.Domain
         {
             Id = id;
             Name = name;
+            Description = Description.DefaultValue;
+            Track = StringValueObject.DefaultValue;
+            Product = Product.DefaultValue;
+            Owner = Owner.DefaultValue;
             Status = ProjectStatus.NotStarted;
             Audit = Audit.Create("default");
         }
@@ -75,10 +79,8 @@ namespace MyPlanner.Projects.Domain
 
         private Project(ProjectProps props) : base(props)
         {
-            if (IsNew())
-            {
+            if (IsNew)
                 AddDomainEvent(new ProjectCreatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
-            }
         }
                 #endregion
 

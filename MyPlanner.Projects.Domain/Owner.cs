@@ -13,9 +13,6 @@ namespace MyPlanner.Projects.Domain
             return new Owner(value);
         }
 
-        public static Owner CreateDefault()
-        {
-            return new Owner("Default");
-        }
+        public static new Owner DefaultValue => new Owner(string.Empty);
     }
 }

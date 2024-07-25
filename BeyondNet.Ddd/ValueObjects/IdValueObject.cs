@@ -20,5 +20,7 @@ namespace BeyondNet.Ddd.ValueObjects
             yield return Value;
         }
 
+        public static IdValueObject DefaultValue => new IdValueObject(Guid.Empty.ToString());
+
     }
 }
