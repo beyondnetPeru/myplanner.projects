@@ -1,7 +1,6 @@
 ﻿using MediatR;
 
 using MyPlanner.Projects.Api.Application.Services;
-using MyPlanner.Projects.Api.Application.UseCases.Commands.CancelProject;
 using MyPlanner.Projects.Domain.DomainEvents;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel

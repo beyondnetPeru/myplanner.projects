@@ -16,7 +16,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
 
         public async Task Handle(ProjectCreatedDomainEvent notification, CancellationToken cancellationToken)
         {
-            var integrationEvent = new ProjectCreatedIntegrationEvent(notification.UserId, notification.ProjectId, notification.Name);
+            var integrationEvent = new ProjectCreatedIntegrationEvent(notification.Name);
 
             await projectIntegrationEventService.AddAndSaveEventAsync(integrationEvent);
         }

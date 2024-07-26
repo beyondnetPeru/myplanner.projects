@@ -4,6 +4,7 @@ using BeyondNet.Ddd.ValueObjects;
 using MediatR;
 using MyPlanner.Projects.Api.Application.Services;
 using MyPlanner.Projects.Api.Application.UseCases.Commands;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate;
 using MyPlanner.Projects.Domain;
 using MyPlanner.Projects.Infrastructure.Idempotency;
 
@@ -29,7 +30,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
 
         public async Task<bool> Handle(ProjectCreateCommand request, CancellationToken cancellationToken)
         {
-            var projectCreatedIntegrationEvent = new ProjectCreatedIntegrationEvent(request.UserId, request.Name);
+            var projectCreatedIntegrationEvent = new ProjectCreatedIntegrationEvent(request.Name);
 
             await projectIntegrationEventService.AddAndSaveEventAsync(projectCreatedIntegrationEvent);
 

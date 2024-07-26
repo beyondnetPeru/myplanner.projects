@@ -1,6 +1,12 @@
 ﻿using MediatR;
 using MyPlanner.Projects.Api.Application.Extensions;
-using MyPlanner.Projects.Api.Application.UseCases.Commands.CreateProject;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateDescription;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateName;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateOwner;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateRiskLevel;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateTrack;
 using MyPlanner.Projects.Infrastructure.Idempotency;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands
@@ -66,10 +72,35 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands
                             commandId = createProjectCommand.UserId;
                             break;
 
-                        //case CancelOrderCommand cancelOrderCommand:
-                        //    idProperty = nameof(cancelOrderCommand.OrderNumber);
-                        //    commandId = $"{cancelOrderCommand.OrderNumber}";
-                        //    break;
+                        case ProjectUpdateNameCommand updateProjectNameCommand:
+                            idProperty = nameof(updateProjectNameCommand.ProjectId);
+                            commandId = updateProjectNameCommand.ProjectId;
+                            break;
+                        
+                        case ProjectUpdateDescriptionCommand updateProjectDescriptionCommand:
+                            idProperty = nameof(updateProjectDescriptionCommand.ProjectId);
+                            commandId = updateProjectDescriptionCommand.ProjectId;
+                            break;
+
+                        case ProjectUpdateTrackCommand updateProjectTrackCommand:
+                            idProperty = nameof(updateProjectTrackCommand.ProjectId);
+                            commandId = updateProjectTrackCommand.ProjectId;
+                            break;
+
+                        case ProjectUpdateRiskLevelCommand updateProjectRiskLevelCommand:
+                            idProperty = nameof(updateProjectRiskLevelCommand.ProjectId);
+                            commandId = updateProjectRiskLevelCommand.ProjectId;
+                            break;
+
+                        case ProjectUpdateOwnerCommand updateProjectOwnerCommand:
+                            idProperty = nameof(updateProjectOwnerCommand.ProjectId);
+                            commandId = updateProjectOwnerCommand.ProjectId;
+                            break;
+                        
+                        case ProjectCancelCommand cancelProjectCommand:
+                            idProperty = nameof(cancelProjectCommand.ProjectId);
+                            commandId = cancelProjectCommand.ProjectId;
+                            break;
 
                         //case ShipOrderCommand shipOrderCommand:
                         //    idProperty = nameof(shipOrderCommand.OrderNumber);

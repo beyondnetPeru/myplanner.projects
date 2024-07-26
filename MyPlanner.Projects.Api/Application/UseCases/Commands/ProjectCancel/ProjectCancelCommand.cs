@@ -2,5 +2,5 @@
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel
 {
-    public record ProjectCancelCommand(string projectId) : IRequest<bool>;
+    public record ProjectCancelCommand(string ProjectId) : IRequest<bool>;
 }

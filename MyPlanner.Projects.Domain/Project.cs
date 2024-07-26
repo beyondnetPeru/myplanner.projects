@@ -193,7 +193,7 @@ namespace MyPlanner.Projects.Domain
             AddDomainEvent(new ProjectRiskLevelUpdatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue(), GetPropsCopy().RiskLevel!.Name));
         }
 
-        public void SetOwner(Owner owner)
+        public void UpdateOwner(Owner owner)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
             {
@@ -256,7 +256,7 @@ namespace MyPlanner.Projects.Domain
             AddDomainEvent(new ProjectCompletedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
         }
 
-        public void Hold()
+        public void OnHold()
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
             {

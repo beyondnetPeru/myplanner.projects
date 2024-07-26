@@ -15,7 +15,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel
 
         public async Task<bool> Handle(ProjectCancelCommand request, CancellationToken cancellationToken)
         {
-            var projectToUpdate = await projectRepository.GetAsync(request.projectId);
+            var projectToUpdate = await projectRepository.GetAsync(request.ProjectId);
 
             if (projectToUpdate == null)
             {
