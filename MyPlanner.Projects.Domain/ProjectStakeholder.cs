@@ -26,15 +26,15 @@ namespace MyPlanner.Projects.Domain
         }
     }
 
-    public class ProjectStakeholder : Entity<ProjectStakeholder, ProjectStakeHolderProsp>
+    public class ProjectStakeHolder : Entity<ProjectStakeHolder, ProjectStakeHolderProsp>
     {
-        private ProjectStakeholder(ProjectStakeHolderProsp props) : base(props)
+        private ProjectStakeHolder(ProjectStakeHolderProsp props) : base(props)
         {
         }
 
-        public static ProjectStakeholder Create(IdValueObject id, Project project, Name name)
+        public static ProjectStakeHolder Create(IdValueObject id, Project project, Name name)
         {
-            return new ProjectStakeholder(new ProjectStakeHolderProsp(id, project, name));
+            return new ProjectStakeHolder(new ProjectStakeHolderProsp(id, project, name));
         }
 
         public void UpdateName(Name name)

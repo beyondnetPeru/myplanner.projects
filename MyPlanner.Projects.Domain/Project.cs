@@ -11,14 +11,14 @@ namespace MyPlanner.Projects.Domain
         public IdValueObject Id { get; private set; }
         public Name Name { get; private set; }
         public Description? Description { get; private set; }
-        public StringValueObject? Track { get; private set; } 
+        public Track? Track { get; private set; }
         public Product? Product { get; private set; }
         public Owner? Owner { get; private set; }
         public ProjectRiskLevel RiskLevel { get; set; } = ProjectRiskLevel.Low;
         public ICollection<ProjectBudget> Budgets { get; private set; } = new List<ProjectBudget>();
         public ICollection<ProjectBacklog> Backlogs { get; private set; } = new List<ProjectBacklog>();
         public ICollection<ProjectScope> Scopes { get; private set; } = new List<ProjectScope>();
-        public ICollection<ProjectStakeholder> StakeHolders { get; private set; } = new List<ProjectStakeholder>();
+        public ICollection<ProjectStakeHolder> StakeHolders { get; private set; } = new List<ProjectStakeHolder>();
         public ProjectStatus Status { get; set; } = ProjectStatus.NotStarted;
         public Audit Audit { get; private set; } = Audit.Create("default");
 
@@ -27,16 +27,24 @@ namespace MyPlanner.Projects.Domain
             Id = id;
             Name = name;
             Description = Description.DefaultValue;
-            Track = StringValueObject.DefaultValue;
+            Track = Track.DefaultValue;
             Product = Product.DefaultValue;
             Owner = Owner.DefaultValue;
             Status = ProjectStatus.NotStarted;
             Audit = Audit.Create("default");
         }
 
-        public ProjectProps(IdValueObject id, Name name, StringValueObject track, Product product, Description description, 
-                            ProjectRiskLevel riskLevel, ICollection<ProjectBacklog> backlogs, ICollection<ProjectScope> scopes, 
-                            Owner owner, ICollection<ProjectStakeholder> stakeHolders)
+        public ProjectProps(IdValueObject id, 
+                            Name name, 
+                            Track track, 
+                            Product product, 
+                            Description description,
+                            ProjectRiskLevel riskLevel,
+                            Owner owner,
+                            ICollection<ProjectBudget> budgets,
+                            ICollection<ProjectBacklog> backlogs, 
+                            ICollection<ProjectScope> scopes,
+                            ICollection<ProjectStakeHolder> stakeHolders)
         {
             Id = id;
             Name = name;
@@ -44,10 +52,11 @@ namespace MyPlanner.Projects.Domain
             Product = product;
             Description = description;
             RiskLevel = riskLevel;
-            Backlogs = backlogs;
-            Scopes = scopes;
             Owner = owner;
-            StakeHolders = stakeHolders;            
+            Backlogs = backlogs;
+            Budgets = budgets;
+            Scopes = scopes;
+            StakeHolders = stakeHolders;
             Status = ProjectStatus.NotStarted;
             Audit = Audit.Create("default");
         }
@@ -70,9 +79,9 @@ namespace MyPlanner.Projects.Domain
             };
         }
     }
-    
+
     #endregion
-    
+
     public class Project : Entity<Project, ProjectProps>, IAggregateRoot
     {
         #region Constructors
@@ -80,22 +89,35 @@ namespace MyPlanner.Projects.Domain
         private Project(ProjectProps props) : base(props)
         {
             if (IsNew)
-                AddDomainEvent(new ProjectCreatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
+            {
+                var eventProps = GetPropsCopy();
+
+                AddDomainEvent(new ProjectCreatedDomainEvent(eventProps.Id.GetValue(), eventProps.Name.GetValue(), eventProps.Audit.GetValue().CreatedBy));
+            }
         }
-                #endregion
+
+        #endregion
 
         #region Factory Methods
 
         public static Project Create(IdValueObject id, Name name)
         {
-           return new Project(new ProjectProps(id, name));
+            return new Project(new ProjectProps(id, name));
         }
 
-        public static Project Create(IdValueObject id, Name name, StringValueObject track, Product product, Description description,
-                                                ProjectRiskLevel riskLevel, ICollection<ProjectBacklog> backlogs, ICollection<ProjectScope> scopes,
-                                                                                    Owner owner, ICollection<ProjectStakeholder> stakeHolders)
+        public static Project Create(IdValueObject id, 
+                                     Name name, 
+                                     Track track, 
+                                     Product product, 
+                                     Description description,
+                                     ProjectRiskLevel riskLevel,
+                                     Owner owner,
+                                     ICollection<ProjectBudget> budgets,
+                                     ICollection<ProjectBacklog> backlogs, 
+                                     ICollection<ProjectScope> scopes,
+                                     ICollection<ProjectStakeHolder> stakeHolders)
         {
-            return new Project(new ProjectProps(id, name, track, product, description, riskLevel, backlogs, scopes, owner, stakeHolders));
+            return new Project(new ProjectProps(id, name, track, product, description, riskLevel, owner, budgets, backlogs, scopes, stakeHolders));
         }
 
         #endregion
@@ -104,8 +126,12 @@ namespace MyPlanner.Projects.Domain
 
         public void UpdateTrack(StringValueObject track)
         {
+
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(track), "Project is completed, you can't update the track");
+                return;
+            }
 
             var props = GetProps();
 
@@ -118,23 +144,31 @@ namespace MyPlanner.Projects.Domain
         public void UpdateName(Name name)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(name), "Project is completed, you can't update the name");
+                return;
+            }
 
             var props = GetProps();
-            
+
             props.Name.SetValue(name.GetValue());
             props.Audit.Update("default");
-            
+
             SetProps(props);
+
+            AddDomainEvent(new ProjectNameUpdatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
         }
 
         public void UpdateDescription(Description description)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(description), "Project is completed, you can't update the description");
+                return;
+            }
 
             var props = GetProps();
-            
+
             props.Description!.SetValue(description.GetValue());
             props.Audit.Update("default");
 
@@ -144,7 +178,10 @@ namespace MyPlanner.Projects.Domain
         public void UpdateRiskLevel(ProjectRiskLevel riskLevel)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(riskLevel), "Project is completed, you can't update the risk level");
+                return;
+            }
 
             var props = GetProps();
 
@@ -159,20 +196,31 @@ namespace MyPlanner.Projects.Domain
         public void SetOwner(Owner owner)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(owner), "Project is completed, you can't update the owner");
+                return;
+            }
 
             var props = GetProps();
+
+            var oldOwner = props.Owner!.GetValue();
 
             props.Owner!.SetValue(owner.GetValue());
             props.Audit.Update("default");
 
             SetProps(props);
+
+            AddDomainEvent(new ProjectOwnerUpdatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Owner!.GetValue(), oldOwner));
+
         }
 
         public void Start()
         {
             if (GetPropsCopy().Status != ProjectStatus.NotStarted)
+            {
                 AddBrokenRule("Status", "Project is already started");
+                return;
+            }
 
             var props = GetProps();
 
@@ -187,10 +235,16 @@ namespace MyPlanner.Projects.Domain
         public void Complete()
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule("Status", "Project is already completed");
+                return;
+            }
 
             if (GetPropsCopy().Status == ProjectStatus.OnHold)
+            {
                 AddBrokenRule("Status", "Project is on hold, you can't complete it");
+                return;
+            }
 
             var props = GetProps();
 
@@ -205,10 +259,16 @@ namespace MyPlanner.Projects.Domain
         public void Hold()
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule("Status", "Project is completed, you can't hold it");
+                return;
+            }
 
             if (GetPropsCopy().Status == ProjectStatus.OnHold)
+            {
                 AddBrokenRule("Status", "Project is already on hold");
+                return;
+            }
 
             var props = GetProps();
 
@@ -218,6 +278,57 @@ namespace MyPlanner.Projects.Domain
             SetProps(props);
 
             AddDomainEvent(new ProjectHoldedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
+        }
+
+        public void Resume()
+        {
+            if (GetPropsCopy().Status != ProjectStatus.OnHold)
+            {
+                AddBrokenRule("Status", "Project is not on hold, you can't resume it");
+                return;
+            }
+
+            var props = GetProps();
+
+            props.Status = ProjectStatus.InProgress;
+            props.Audit.Update("default");
+
+            SetProps(props);
+
+            AddDomainEvent(new ProjectResumedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
+        }
+
+        public void Cancel()
+        {
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
+                AddBrokenRule("Status", "Project is completed, you can't cancel it");
+                return;
+            }
+
+            if (GetPropsCopy().Status == ProjectStatus.Canceled)
+            {
+                AddBrokenRule("Status", "Project is already canceled");
+                return;
+            }
+
+            var props = GetProps();
+
+            props.Status = ProjectStatus.Canceled;
+            props.Audit.Update("default");
+
+            SetProps(props);
+
+            AddDomainEvent(new ProjectCanceledDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().Name.GetValue()));
+        }
+
+        public void AddBacklog(List<ProjectBacklog> backlogs)
+        {
+
+            foreach (var backlog in backlogs)
+            {
+                AddBacklog(backlog);
+            }
         }
 
         public void AddBacklog(ProjectBacklog backlog)
@@ -235,14 +346,22 @@ namespace MyPlanner.Projects.Domain
 
         public void RemoveBacklog(ProjectBacklog backlog)
         {
-            if (GetPropsCopy().Backlogs!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(backlog.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (!GetPropsCopy().Backlogs!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(backlog.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var props = GetProps();
+
+            props.Backlogs!.Remove(backlog);
+            props.Audit.Update("default");
+
+            SetProps(props);
+        }
+
+        public void AddScope(List<ProjectScope> scopes)
+        {
+            foreach (var scope in scopes)
             {
-                var props = GetProps();
-
-                props.Backlogs!.Remove(backlog);
-                props.Audit.Update("default");
-
-                SetProps(props);
+                AddScope(scope);
             }
         }
 
@@ -261,18 +380,28 @@ namespace MyPlanner.Projects.Domain
 
         public void RemoveScope(ProjectScope scope)
         {
-            if (GetPropsCopy().Scopes!.Any(x => x.GetPropsCopy().Description.ToString().ToLower()!.Equals(scope.GetPropsCopy().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
-            {
-                var props = GetProps();
-                
-                props.Scopes!.Remove(scope);
-                props.Audit.Update("default");
+            if (!GetPropsCopy().Scopes!.Any(x => x.GetPropsCopy().Description.ToString()!.ToLower().Equals(scope.GetPropsCopy().Description.ToString(), StringComparison.OrdinalIgnoreCase)))
+                return;
 
-                SetProps(props);
+            var props = GetProps();
+
+            props.Scopes!.Remove(scope);
+            props.Audit.Update("default");
+
+            SetProps(props);
+        }
+
+        public void AddStakeholder(List<ProjectStakeHolder> stakeholders)
+        {
+            var props = GetProps();
+
+            foreach (var stakeholder in stakeholders)
+            {
+                AddStakeholder(stakeholder);
             }
         }
 
-        public void AddStakeholder(ProjectStakeholder stakeholder)
+        public void AddStakeholder(ProjectStakeHolder stakeholder)
         {
             if (GetPropsCopy().StakeHolders!.Any(x => x.GetPropsCopy().Name.ToString()!.Equals(stakeholder.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
                 return;
@@ -285,29 +414,38 @@ namespace MyPlanner.Projects.Domain
             SetProps(props);
         }
 
-        public void RemoveStakeholder(ProjectStakeholder stakeholder)
+        public void RemoveStakeholder(ProjectStakeHolder stakeholder)
         {
-            if (GetPropsCopy().StakeHolders!.Any(x => x.GetPropsCopy().Name.ToString().ToLower()!.Equals(stakeholder.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (!GetPropsCopy().StakeHolders!.Any(x => x.GetPropsCopy().Name.ToString()!.ToLower().Equals(stakeholder.GetPropsCopy().Name.ToString(), StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var props = GetProps();
+
+            props.StakeHolders!.Remove(stakeholder);
+            props.Audit.Update("default");
+
+            SetProps(props);
+        }
+
+        public void AddBudget(List<ProjectBudget> budgets)
+        {
+            foreach (var budget in budgets)
             {
-                var props = GetProps();
-                
-                props.StakeHolders!.Remove(stakeholder);
-                props.Audit.Update("default");
-
-                SetProps(props);
+                AddBudget(budget);
             }
-
         }
 
         public void AddBudget(ProjectBudget projectBudget)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(projectBudget), "Project is completed, you can't add budget");
+                return;
+            }
 
             var props = GetProps();
 
             props.Budgets!.Add(projectBudget);
-            
             props.Audit.Update("default");
 
             SetProps(props);
@@ -316,7 +454,10 @@ namespace MyPlanner.Projects.Domain
         public void RemoveBudget(ProjectBudget projectBudget)
         {
             if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
                 AddBrokenRule(nameof(projectBudget), "Project is completed, you can't remove budget");
+                return;
+            }
 
             var props = GetProps();
 
@@ -337,6 +478,7 @@ namespace MyPlanner.Projects.Domain
         public static ProjectStatus InProgress = new ProjectStatus(2, nameof(InProgress));
         public static ProjectStatus Completed = new ProjectStatus(3, nameof(Completed));
         public static ProjectStatus OnHold = new ProjectStatus(4, nameof(OnHold));
+        public static ProjectStatus Canceled = new ProjectStatus(5, nameof(Canceled));
 
         private ProjectStatus(int id, string name) : base(id, name)
         {

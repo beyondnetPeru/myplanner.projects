@@ -7,7 +7,7 @@
         public string? Product { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public int? RiskLevel { get; set; }
+        public int RiskLevel { get; set; }
         public string? Owner { get; set; }
         public int? Status { get; set; }
         public ICollection<BacklogTable> Backlogs { get; set; } = new List<BacklogTable>();

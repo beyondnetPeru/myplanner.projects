@@ -12,5 +12,6 @@ namespace MyPlanner.Projects.Domain
         Task UpdateRiskLevel(string id, int riskLevel);
         Task UpdateStatus(string id, int status);
         Task Delete(string id);
+        Task<Project> GetAsync(string id);
     }
 }

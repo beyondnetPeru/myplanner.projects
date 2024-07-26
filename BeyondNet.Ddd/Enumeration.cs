@@ -65,6 +65,7 @@ namespace BeyondNet.Ddd
         }
 
         public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
+
     }
 }
 

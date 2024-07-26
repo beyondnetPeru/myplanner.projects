@@ -44,7 +44,7 @@ namespace MyPlanner.Projects.Domain
         {
         }
 
-        public static ProjectBackLogFeature Create(ProjectBacklog backlog, IdValueObject id, Name name, Priority priority)
+        public static ProjectBackLogFeature Create(IdValueObject id, ProjectBacklog backlog, Name name, Priority priority)
         {
             var props = new ProjectBackLogFeatureProps(id, backlog, name, priority);
 

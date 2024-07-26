@@ -6,8 +6,12 @@ namespace MyPlanner.Projects.Domain
 {
     public class Product : ValueObject<string>
     {
-        public Product(string value) : base(value)
+        protected Product(string value) : base(value)
         {
+        }
+        public static Product Create(string value)
+        {
+            return new Product(value);
         }
 
         public override string ToString() => Value;

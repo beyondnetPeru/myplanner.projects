@@ -47,7 +47,7 @@ namespace MyPlanner.Releases.Domain
     {
         private ReleaseFeature(ReleaseFeatureProps props) : base(props)
         {
-            if (this.IsNew())
+            if (IsNew)
                 AddDomainEvent(new ReleaseFeatureCreatedDomainEvent(GetPropsCopy().Id.GetValue(), GetPropsCopy().FeatureName.GetValue()));
         }
 

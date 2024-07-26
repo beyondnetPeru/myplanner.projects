@@ -22,6 +22,7 @@ namespace BeyondNet.Ddd.ValueObjects
 
         public static Priority operator --(Priority priority) => new Priority(priority.Value - 1);
 
+        public static Priority FromValue(int value) => new Priority(value);
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

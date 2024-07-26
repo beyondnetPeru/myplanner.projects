@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using MyPlanner.EventBus.Extensions;
 using MyPlanner.Projects.Api.Application.Dtos;
 using MyPlanner.Projects.Api.Application.UseCases.Commands;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateName;
 using MyPlanner.Projects.Api.Application.UseCases.Queries;
 using MyPlanner.Shared.Application.Dtos;
 
@@ -15,11 +17,43 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
             var api = app.MapGroup("api/projects").HasApiVersion(1.0);
 
             api.MapGet("/projects", GetOrdersByUserAsync);
-            api.MapGet("/projects/{id}", GetOrderByIdAsync);
+            api.MapGet("/projects/{id:string}", GetOrderByIdAsync);
             api.MapPost("/projects", CreateOrderAsync);
+            api.MapPut("/projects/{id:string}", UpdateNameAsync);
+            api.MapPost("/projects/{id:string}/cancel", CancelProjectAsync);
 
 
             return api;
+        }
+
+        public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> CancelProjectAsync(
+            [FromHeader(Name = "x-requestid")] Guid requestId,
+            ProjectCancelCommand command, ProjectServices services)
+        {
+            if (requestId == Guid.Empty)
+            {
+                services.Logger.LogWarning("Invalid IntegrationEvent - RequestId is missing - {@IntegrationEvent}", command);
+                return TypedResults.BadRequest("RequestId is missing.");
+            }
+
+            var requestCancelProject = new IdentifiedCommand<ProjectCancelCommand, bool>(command, requestId);
+
+            services.Logger.LogInformation("Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                                           requestCancelProject.GetGenericTypeName(),
+                                           nameof(requestCancelProject.Id),
+                                           requestCancelProject.Id,
+                                           requestCancelProject);
+
+            var commandResult = await services.Mediator.Send(requestCancelProject);
+
+            if (!commandResult)
+            {
+                services.Logger.LogWarning("CancelProjectCommand failed - RequestId: {RequestId}", requestId);
+                return TypedResults.Problem("Failed to cancel project.");
+            }
+
+            services.Logger.LogInformation("CancelProjectCommand succeeded - RequestId: {RequestId}", requestId);
+            return TypedResults.Ok();
         }
 
         public static async Task<Ok<IEnumerable<ProjectInfo>>> GetOrdersByUserAsync([AsParameters] ProjectServices services)
@@ -57,9 +91,9 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
 
             using (services.Logger.BeginScope(new List<KeyValuePair<string, object>> { new("IdentifiedCommandId", requestId) }))
             {
-                var createProjectCommand = new CreateProjectCommand(request.UserId, request.Name);
+                var createProjectCommand = new ProjectCreateCommand(request.UserId, request.Name);
 
-                var requestCreateProject = new IdentifiedCommand<CreateProjectCommand, bool>(createProjectCommand, requestId);
+                var requestCreateProject = new IdentifiedCommand<ProjectCreateCommand, bool>(createProjectCommand, requestId);
 
                 services.Logger.LogInformation(
                     "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
@@ -81,6 +115,34 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
 
                 return TypedResults.Ok();
             }
+        }
+
+
+        public static async Task<Results<Ok, BadRequest<string>>> UpdateNameAsync(
+                       string id, ProjectUpdateNameDto request,
+                       [FromHeader(Name = "x-requestid")] Guid requestId,
+                       [AsParameters] ProjectServices services)
+        {
+            var changeProjectNameCommand = new ProjectUpdateNameCommand(id, request.NewName);
+
+            services.Logger.LogInformation("Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                                           changeProjectNameCommand.GetGenericTypeName(),
+                                           nameof(changeProjectNameCommand.Name),
+                                           changeProjectNameCommand.Name,
+                                           changeProjectNameCommand);
+
+            var result = await services.Mediator.Send(changeProjectNameCommand);
+
+            if (result)
+            {
+                services.Logger.LogInformation("ChangeProjectNameCommand succeeded - ProjectId: {ProjectId}", id);
+            }
+            else
+            {
+                services.Logger.LogWarning("ChangeProjectNameCommand failed - ProjectId: {ProjectId}", id);
+            }
+
+            return TypedResults.Ok();
         }
     }
 

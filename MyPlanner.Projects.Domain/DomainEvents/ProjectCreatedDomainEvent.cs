@@ -4,13 +4,15 @@ namespace MyPlanner.Projects.Domain.DomainEvents
 {
     public class ProjectCreatedDomainEvent : DomainEvent
     {
-        public ProjectCreatedDomainEvent(string id, string name)
+        public ProjectCreatedDomainEvent(string projectId, string name, string userId)
         {
             Name = name;
-            Id = id;
+            ProjectId = projectId;
+            UserId = userId;
         }
 
         public string Name { get; }
-        public string Id { get; }
+        public string ProjectId { get; }
+        public string UserId { get; }
     }
 }

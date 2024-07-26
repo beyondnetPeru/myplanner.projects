@@ -36,9 +36,9 @@ namespace MyPlanner.Projects.Domain
         {
         }
 
-        public static ProjectBudget Create(Project project, Price amount, Description description, StringValueObject approvedBy)
+        public static ProjectBudget Create(IdValueObject id, Project project, Price amount, Description description, StringValueObject approvedBy)
         {
-            return new ProjectBudget(new ProjectBudgetProps(IdValueObject.Create(), project, amount, description, approvedBy));
+            return new ProjectBudget(new ProjectBudgetProps(id, project, amount, description, approvedBy));
         }
     }
 }

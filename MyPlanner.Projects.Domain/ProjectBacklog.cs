@@ -14,7 +14,7 @@ namespace MyPlanner.Projects.Domain
         public Description Description { get; private set; } = Description.DefaultValue;
         public DateTimeUtcValueObject StartDate { get; private set; }
         public DateTimeUtcValueObject EndDate { get; private set; }
-        public ICollection<ProjectBackLogFeature> Features { get; private set; } = new List<ProjectBackLogFeature>();
+        public ICollection<ProjectBackLogFeature> Features { get; set; } = new List<ProjectBackLogFeature>();
         public ProjectBacklogStatus Status { get; set; }
 
         public ProjectBacklogProps(IdValueObject id,Project project, Name name)
@@ -150,6 +150,10 @@ namespace MyPlanner.Projects.Domain
             GetProps().Status = ProjectBacklogStatus.OnHold;
         }
 
+        public static ICollection<ProjectBacklog> Create(List<ProjectBacklogProps> list)
+        {
+            return list.Select(x => new ProjectBacklog(x)).ToList();
+        }
     }
 
     public class ProjectBacklogStatus : Enumeration

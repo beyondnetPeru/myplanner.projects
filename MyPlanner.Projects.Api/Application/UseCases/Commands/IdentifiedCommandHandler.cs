@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MyPlanner.Projects.Api.Application.Extensions;
+using MyPlanner.Projects.Api.Application.UseCases.Commands.CreateProject;
 using MyPlanner.Projects.Infrastructure.Idempotency;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands
@@ -60,7 +61,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands
 
                     switch (command)
                     {
-                        case CreateProjectCommand createProjectCommand:
+                        case ProjectCreateCommand createProjectCommand:
                             idProperty = nameof(createProjectCommand.UserId);
                             commandId = createProjectCommand.UserId;
                             break;

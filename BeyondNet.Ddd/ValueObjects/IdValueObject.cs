@@ -15,11 +15,16 @@ namespace BeyondNet.Ddd.ValueObjects
             return new IdValueObject(Guid.NewGuid().ToString());
         }
 
+        public static IdValueObject Create(string value)
+        {
+            return new IdValueObject(value);
+        }
+
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return Value;
         }
-
+        
         public static IdValueObject DefaultValue => new IdValueObject(Guid.Empty.ToString());
 
     }
