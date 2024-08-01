@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MyPlanner.EventBus.Extensions;
-using MyPlanner.Projects.Api.Application.Dtos;
 using MyPlanner.Projects.Api.Application.UseCases.Commands;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectComplete;
@@ -27,7 +26,8 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
 
             api.MapGet("/projects", GetOrdersByUserAsync);
             api.MapGet("/projects/{id:string}", GetOrderByIdAsync);
-            api.MapPost("/projects", CreateOrderAsync);
+            api.MapPost("/project", CreateProjectAsync);
+            api.MapPost("/projectsandchilds", CreateProjectWithChild);
             api.MapPut("/projects/{id:string}/updatename", UpdateNameAsync);
             api.MapPut("/projects/{id:string}/updatedescription", UpdateDescriptionAsync);
             api.MapPut("/projects/{id:string}/updatetrack", UpdateTrackAsync);
@@ -85,9 +85,56 @@ namespace MyPlanner.Projects.Api.Application.Endpoints
             return TypedResults.Ok(order);
         }
 
-        public static async Task<Results<Ok, BadRequest<string>>> CreateOrderAsync(
+
+        public static async Task<Results<Ok, BadRequest<string>>> CreateProjectWithChild([FromHeader(Name = "x-requestid")] Guid requestId,
+        ProjectDto request,
+        [AsParameters] ProjectServices services)
+        {
+            //mask the credit card number
+
+            services.Logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId}",
+                request.GetGenericTypeName(),
+                nameof(request.UserId),
+                request.UserId); //don't log the request as it has CC number
+
+            if (requestId == Guid.Empty)
+            {
+                services.Logger.LogWarning("Invalid IntegrationEvent - RequestId is missing - {@IntegrationEvent}", request);
+                return TypedResults.BadRequest("RequestId is missing.");
+            }
+
+            using (services.Logger.BeginScope(new List<KeyValuePair<string, object>> { new("IdentifiedCommandId", requestId) }))
+            {
+                var createProjectCommand = new ProjectCreateAndChildCommand(request);
+
+                var requestCreateProject = new IdentifiedCommand<ProjectCreateAndChildCommand, bool>(createProjectCommand, requestId);
+
+                services.Logger.LogInformation(
+                    "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                    requestCreateProject.GetGenericTypeName(),
+                    nameof(requestCreateProject.Id),
+                    requestCreateProject.Id,
+                    requestCreateProject);
+
+                var result = await services.Mediator.Send(requestCreateProject);
+
+                if (result)
+                {
+                    services.Logger.LogInformation("CreateProjectCommand succeeded - RequestId: {RequestId}", requestId);
+                }
+                else
+                {
+                    services.Logger.LogWarning("CreateProjectCommand failed - RequestId: {RequestId}", requestId);
+                }
+
+                return TypedResults.Ok();
+            }
+        }
+
+        public static async Task<Results<Ok, BadRequest<string>>> CreateProjectAsync(
         //[FromHeader(Name = "x-requestid")] Guid requestId,
-        CreateProjectDto request,
+        ProjectCreateDto request,
         [AsParameters] ProjectServices services)
         {
             var requestId = Guid.NewGuid();

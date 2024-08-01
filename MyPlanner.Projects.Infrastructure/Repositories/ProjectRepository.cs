@@ -115,14 +115,15 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
 
             var project = Project.Create(IdValueObject.Create(projectTable.Id),
                 Name.Create(projectTable.Name),
-                Track.Create(projectTable.Track!),
                 Product.Create(projectTable.Product!),
                 Description.Create(projectTable.Description!),
                 ProjectRiskLevel.From(projectTable.RiskLevel),
                 Owner.Create(projectTable.Owner!), null, null, null, null);
             
+           
             project.AddStakeholder(LoadStakeHolders(projectTable, project));
             project.AddScope(LoadScopes(projectTable, project));
+            project.AddTrack(LoadTracks(projectTable, project));
             project.AddBacklog(LoadBacklogs(projectTable, project));
             project.AddBudget(LoadBudgets(projectTable, project));
 
@@ -152,6 +153,18 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
                                DateTimeUtcValueObject.Create(scopeTable.RegisterDate));
             }).ToList();
         }
+
+        private static List<ProjectFeatureTrack> LoadTracks(ProjectTable projectTable, Project project)
+        {
+            return projectTable.Tracks.Select(trackTable =>
+            {
+                return ProjectFeatureTrack.Create(
+                               IdValueObject.Create(trackTable.Id),
+                               project,
+                               Name.Create(trackTable.Name));
+            }).ToList();
+        }
+
 
         private static List<ProjectBacklog> LoadBacklogs(ProjectTable projectTable, Project project)
         {

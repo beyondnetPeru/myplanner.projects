@@ -66,6 +66,11 @@ namespace BeyondNet.Ddd
 
         public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
 
+        public T SetValue<T>(int value) where T: Enumeration
+        {
+            var matchingItem = Parse<T, int>(value, "value", item => item.Id == value);
+            return matchingItem;
+        }
     }
 }
 

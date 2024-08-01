@@ -27,15 +27,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateTrac
                 return false;
             }
 
-            project.UpdateTrack(Track.Create(request.Track));
 
-            if (!project.IsValid)
-            {
-                logger.LogWarning("Project name is invalid for project {ProjectId}, errors:{errors}", request.ProjectId, project.GetBrokenRules().ToString());
-                return false;
-            }
-
-            await projectRepository.UpdateTrack(project.GetPropsCopy().Id.GetValue(), project.GetPropsCopy().Track!.GetValue());
             
             logger.LogInformation("Project name updated for project {ProjectId}", request.ProjectId);
 

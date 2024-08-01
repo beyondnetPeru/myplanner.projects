@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BeyondNet.Ddd\BeyondNet.Ddd.csproj" />
     <ProjectReference Include="..\MyPlanner.IntegrationEventLogEF\MyPlanner.IntegrationEventLogEF.csproj" />
   </ItemGroup>
 

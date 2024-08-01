@@ -16,7 +16,6 @@ namespace MyPlanner.Projects.Infrastructure.Database.Configurations
             builder.Property(p => p.Name).IsRequired();
             builder.Property(p => p.Description).IsRequired(false);
             builder.Property(p => p.Owner).IsRequired(false);
-            builder.Property(p => p.Track).IsRequired(false);
             builder.Property(p => p.RiskLevel).IsRequired(false);
 
             builder.OwnsOne(p => p.Audit).Property(p => p.CreatedBy).HasColumnName("CreatedBy").IsRequired();
@@ -34,6 +33,11 @@ namespace MyPlanner.Projects.Infrastructure.Database.Configurations
                 .WithOne(p => p.Project)
                 .HasForeignKey(b => b.ProjectId)
                 .HasPrincipalKey(p => p.Id);
+
+            builder.HasMany(p => p.Tracks)
+               .WithOne(p => p.Project)
+               .HasForeignKey(b => b.ProjectId)
+               .HasPrincipalKey(p => p.Id);
 
             builder.HasMany(p => p.Scopes)
                 .WithOne(p => p.Project)

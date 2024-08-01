@@ -11,15 +11,15 @@ namespace MyPlanner.Projects.Domain
         public IdValueObject Id { get; private set; }
         public Name Name { get; private set; }
         public Description? Description { get; private set; }
-        public Track? Track { get; private set; }
+        public ICollection<ProjectFeatureTrack> Tracks { get; private set; } = new List<ProjectFeatureTrack>();
         public Product? Product { get; private set; }
         public Owner? Owner { get; private set; }
-        public ProjectRiskLevel RiskLevel { get; set; } = ProjectRiskLevel.Low;
+        public ProjectRiskLevel RiskLevel { get; private set; } = ProjectRiskLevel.Low;
         public ICollection<ProjectBudget> Budgets { get; private set; } = new List<ProjectBudget>();
         public ICollection<ProjectBacklog> Backlogs { get; private set; } = new List<ProjectBacklog>();
         public ICollection<ProjectScope> Scopes { get; private set; } = new List<ProjectScope>();
         public ICollection<ProjectStakeHolder> StakeHolders { get; private set; } = new List<ProjectStakeHolder>();
-        public ProjectStatus Status { get; set; } = ProjectStatus.NotStarted;
+        public ProjectStatus Status { get; private set; } = ProjectStatus.NotStarted;
         public Audit Audit { get; private set; } = Audit.Create("default");
 
         public ProjectProps(IdValueObject id, Name name)
@@ -27,7 +27,6 @@ namespace MyPlanner.Projects.Domain
             Id = id;
             Name = name;
             Description = Description.DefaultValue;
-            Track = Track.DefaultValue;
             Product = Product.DefaultValue;
             Owner = Owner.DefaultValue;
             Status = ProjectStatus.NotStarted;
@@ -36,7 +35,6 @@ namespace MyPlanner.Projects.Domain
 
         public ProjectProps(IdValueObject id, 
                             Name name, 
-                            Track track, 
                             Product product, 
                             Description description,
                             ProjectRiskLevel riskLevel,
@@ -48,7 +46,6 @@ namespace MyPlanner.Projects.Domain
         {
             Id = id;
             Name = name;
-            Track = track;
             Product = product;
             Description = description;
             RiskLevel = riskLevel;
@@ -66,7 +63,6 @@ namespace MyPlanner.Projects.Domain
         {
             return new ProjectProps(Id, Name)
             {
-                Track = Track,
                 Product = Product,
                 Description = Description,
                 RiskLevel = RiskLevel,
@@ -107,7 +103,6 @@ namespace MyPlanner.Projects.Domain
 
         public static Project Create(IdValueObject id, 
                                      Name name, 
-                                     Track track, 
                                      Product product, 
                                      Description description,
                                      ProjectRiskLevel riskLevel,
@@ -117,14 +112,23 @@ namespace MyPlanner.Projects.Domain
                                      ICollection<ProjectScope> scopes,
                                      ICollection<ProjectStakeHolder> stakeHolders)
         {
-            return new Project(new ProjectProps(id, name, track, product, description, riskLevel, owner, budgets, backlogs, scopes, stakeHolders));
+            return new Project(new ProjectProps(id, name, product, description, riskLevel, owner, budgets, backlogs, scopes, stakeHolders));
         }
 
         #endregion
 
         #region Methods
 
-        public void UpdateTrack(StringValueObject track)
+        public void AddTrack(List<ProjectFeatureTrack> tracks)
+        {
+
+            foreach (var track in tracks)
+            {
+                AddTrack(track);
+            }
+        }
+
+        public void AddTrack(ProjectFeatureTrack track)
         {
 
             if (GetPropsCopy().Status == ProjectStatus.Completed)
@@ -135,7 +139,24 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Track!.SetValue(track.GetValue());
+            props.Tracks!.Add(track);
+            props.Audit.Update("default");
+
+            SetProps(props);
+
+        }
+
+        public void RemoveTrack(ProjectFeatureTrack track)
+        {
+            if (GetPropsCopy().Status == ProjectStatus.Completed)
+            {
+                AddBrokenRule(nameof(track), "Project is completed, you can't update the track");
+                return;
+            }
+
+            var props = GetProps();
+
+            props.Tracks!.Remove(track);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -185,7 +206,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.RiskLevel = riskLevel;
+            props.RiskLevel.SetValue<ProjectRiskLevel>(riskLevel.Id);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -224,7 +245,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Status = ProjectStatus.InProgress;
+            props.Status.SetValue<ProjectStatus>(ProjectStatus.InProgress.Id);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -248,7 +269,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Status = ProjectStatus.Completed;
+            props.Status.SetValue<ProjectStatus>(ProjectStatus.Completed.Id);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -272,7 +293,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Status = ProjectStatus.OnHold;
+            props.Status.SetValue<ProjectStatus>(ProjectStatus.OnHold.Id);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -290,7 +311,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Status = ProjectStatus.InProgress;
+            props.Status.SetValue<ProjectStatus>(ProjectStatus.InProgress.Id);
             props.Audit.Update("default");
 
             SetProps(props);
@@ -314,7 +335,7 @@ namespace MyPlanner.Projects.Domain
 
             var props = GetProps();
 
-            props.Status = ProjectStatus.Canceled;
+            props.Status.SetValue<ProjectStatus>(ProjectStatus.Canceled.Id);
             props.Audit.Update("default");
 
             SetProps(props);

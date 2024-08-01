@@ -19,6 +19,7 @@ namespace MyPlanner.Projects.Infrastructure.Database
         public DbSet<ProjectTable> Projects { get; set; }
         public DbSet<BacklogTable> Backlogs { get; set; }
         public DbSet<FeatureTable> Features { get; set; }
+        public DbSet<TrackTable> Tracks { get; set; }
         public DbSet<ScopeTable> Scopes { get; set; }
         public DbSet<StakeHolderTable> StakeHolders { get; set; }
         public IDbContextTransaction GetCurrentTransaction() => currentTransaction!;
@@ -39,6 +40,7 @@ namespace MyPlanner.Projects.Infrastructure.Database
             modelBuilder.ApplyConfiguration(new BacklogEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TrackEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new StakeHolderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new BudgetEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());

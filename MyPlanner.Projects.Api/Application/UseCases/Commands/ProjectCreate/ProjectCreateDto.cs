@@ -1,12 +1,12 @@
-﻿namespace MyPlanner.Projects.Api.Application.Dtos
+﻿namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
 {
-    public class CreateProjectDto
+    public class ProjectCreateDto
     {
         public Guid Id { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
 
-        public CreateProjectDto(string name)
+        public ProjectCreateDto(string name)
         {
             Name = name;
         }

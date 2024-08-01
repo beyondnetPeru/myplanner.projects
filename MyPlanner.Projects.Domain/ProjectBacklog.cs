@@ -70,8 +70,10 @@ namespace MyPlanner.Projects.Domain
         }
 
         public static ProjectBacklog Create(IdValueObject id, IdValueObject projectId, Project project, Name name,
-                                                       Description description, DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate,
-                                                                                                  ICollection<ProjectBackLogFeature> features, ProjectBacklogStatus status)
+                                            Description description, 
+                                            DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate,
+                                            ICollection<ProjectBackLogFeature> features, 
+                                            ProjectBacklogStatus status)
         {
             return new ProjectBacklog(new ProjectBacklogProps(id, projectId, project, name, description, startDate, endDate, features, status));
         }

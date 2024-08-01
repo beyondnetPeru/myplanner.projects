@@ -1,15 +1,15 @@
-﻿namespace MyPlanner.Projects.Infrastructure.Database.Tables
-{
-    public class BacklogDto
+﻿namespace MyPlanner.Projects.Api.Application.Dtos
+{ 
+    public class BacklogTable
     {
         public string Id { get; set; }
         public string ProjectId { get; set; }
-        public ProjectDto Project { get; set; }
+        public ProjectTable Project { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public ICollection<FeatureDto> Features { get; set; } = new List<FeatureDto>();
+        public ICollection<FeatureTable> Features { get; set; } = new List<FeatureTable>();
         public int Status { get; set; }
     }
 }
