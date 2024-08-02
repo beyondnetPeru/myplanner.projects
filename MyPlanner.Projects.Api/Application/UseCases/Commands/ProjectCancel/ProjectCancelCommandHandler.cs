@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using MyPlanner.Projects.Domain;
-using MyPlanner.Projects.Infrastructure.Idempotency;
+using MyPlanner.Shared.Infrastructure.Idempotency;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel
 {
@@ -43,5 +43,5 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCancel
         {
             return true;
         }
-    }   
+    }
 }

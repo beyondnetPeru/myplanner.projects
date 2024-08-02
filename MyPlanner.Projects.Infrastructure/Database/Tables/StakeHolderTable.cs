@@ -1,4 +1,6 @@
-﻿namespace MyPlanner.Projects.Infrastructure.Database.Tables
+﻿using MyPlanner.Shared.Infrastructure.Database;
+
+namespace MyPlanner.Projects.Infrastructure.Database.Tables
 {
     public class StakeHolderTable
     {

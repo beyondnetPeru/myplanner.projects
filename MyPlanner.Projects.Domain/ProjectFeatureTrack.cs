@@ -1,6 +1,7 @@
 ﻿using BeyondNet.Ddd;
 using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
+using MyPlanner.Shared.Domain.ValueObjects;
 
 namespace MyPlanner.Projects.Domain
 {
@@ -16,7 +17,7 @@ namespace MyPlanner.Projects.Domain
             Id = id;
             Name = name;
             Project = project;
-            Description = Description.DefaultValue  ;
+            Description = Description.DefaultValue;
         }
 
         public object Clone()
@@ -37,7 +38,7 @@ namespace MyPlanner.Projects.Domain
         public static ProjectFeatureTrack Create(IdValueObject id, Project project, Name name)
         {
             var props = new ProjectTrackProps(id, project, name);
-            
+
             return new ProjectFeatureTrack(props);
         }
 

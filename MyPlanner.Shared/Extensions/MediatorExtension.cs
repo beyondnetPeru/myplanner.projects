@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Collections;
 
-namespace MyPlanner.Projects.Infrastructure.Extensions
+namespace MyPlanner.Shared.Extensions
 {
     public static class MediatorExtension
     {
@@ -33,7 +33,7 @@ namespace MyPlanner.Projects.Infrastructure.Extensions
                     clearDomainEvents.Invoke(entity, null);
                 }
 
-            }            
+            }
         }
     }
 }

@@ -1,12 +1,11 @@
-﻿using BeyondNet.Ddd;
-using BeyondNet.Ddd.Interfaces;
-using BeyondNet.Ddd.ValueObjects;
+﻿using BeyondNet.Ddd.ValueObjects;
 using MediatR;
 using MyPlanner.Projects.Api.Application.Services;
 using MyPlanner.Projects.Api.Application.UseCases.Commands;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate;
 using MyPlanner.Projects.Domain;
-using MyPlanner.Projects.Infrastructure.Idempotency;
+using MyPlanner.Shared.Domain.ValueObjects;
+using MyPlanner.Shared.Infrastructure.Idempotency;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
 {

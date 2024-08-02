@@ -7,7 +7,7 @@ using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateName;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateOwner;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateRiskLevel;
 using MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateTrack;
-using MyPlanner.Projects.Infrastructure.Idempotency;
+using MyPlanner.Shared.Infrastructure.Idempotency;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands
 {
@@ -76,7 +76,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands
                             idProperty = nameof(updateProjectNameCommand.ProjectId);
                             commandId = updateProjectNameCommand.ProjectId;
                             break;
-                        
+
                         case ProjectUpdateDescriptionCommand updateProjectDescriptionCommand:
                             idProperty = nameof(updateProjectDescriptionCommand.ProjectId);
                             commandId = updateProjectDescriptionCommand.ProjectId;
@@ -96,16 +96,11 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands
                             idProperty = nameof(updateProjectOwnerCommand.ProjectId);
                             commandId = updateProjectOwnerCommand.ProjectId;
                             break;
-                        
+
                         case ProjectCancelCommand cancelProjectCommand:
                             idProperty = nameof(cancelProjectCommand.ProjectId);
                             commandId = cancelProjectCommand.ProjectId;
                             break;
-
-                        //case ShipOrderCommand shipOrderCommand:
-                        //    idProperty = nameof(shipOrderCommand.OrderNumber);
-                        //    commandId = $"{shipOrderCommand.OrderNumber}";
-                        //    break;
 
                         default:
                             idProperty = "Id?";

@@ -1,8 +1,9 @@
 ﻿using MyPlanner.Projects.Infrastructure.Database.Tables;
+using MyPlanner.Shared.Infrastructure.Database;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
 {
-     public class ProjectDto
+    public class ProjectDto
     {
         public string? Track { get; set; }
         public string? Product { get; set; }
@@ -17,7 +18,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectCreate
         public ICollection<BudgetTable> Budgets { get; set; } = new List<BudgetTable>();
     }
 
-    
+
     public class BacklogDto
     {
         public string Name { get; set; }

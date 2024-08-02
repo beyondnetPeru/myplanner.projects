@@ -3,7 +3,7 @@ using BeyondNet.Ddd.Rules;
 using BeyondNet.Ddd.Rules.Impl;
 using BeyondNet.Ddd.ValueObjects;
 
-namespace MyPlanner.Projects.Domain
+namespace MyPlanner.Shared.Domain.ValueObjects
 {
     public class Name : StringRequiredValueObject
     {

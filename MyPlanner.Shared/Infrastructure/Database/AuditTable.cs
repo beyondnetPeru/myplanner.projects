@@ -1,4 +1,4 @@
-﻿namespace MyPlanner.Projects.Infrastructure.Database.Tables
+﻿namespace MyPlanner.Shared.Infrastructure.Database
 {
     public class AuditTable
     {

@@ -2,46 +2,35 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using MyPlanner.Projects.Infrastructure.Database.Configurations;
-using MyPlanner.Projects.Infrastructure.Database.Tables;
+using MyPlanner.Products.Infrastructure.Database.Configurations;
+using MyPlanner.Products.Infrastructure.Database.Tables;
 using MyPlanner.Shared.Extensions;
 using MyPlanner.Shared.Infrastructure.Database.Extensions;
 using System.Data;
 
-namespace MyPlanner.Projects.Infrastructure.Database
+namespace MyPlanner.Products.Infrastructure.Database
 {
-    public class ProjectDbContext : DbContext, IUnitOfWork
+    public class ProductDbContext : DbContext, IUnitOfWork
     {
         private readonly IMediator mediator;
         private IDbContextTransaction? currentTransaction;
 
-        public DbSet<ProjectTable> Projects { get; set; }
-        public DbSet<BacklogTable> Backlogs { get; set; }
-        public DbSet<FeatureTable> Features { get; set; }
-        public DbSet<TrackTable> Tracks { get; set; }
-        public DbSet<ScopeTable> Scopes { get; set; }
-        public DbSet<StakeHolderTable> StakeHolders { get; set; }
+        public DbSet<ProductTable> Products { get; set; }
         public IDbContextTransaction GetCurrentTransaction() => currentTransaction!;
         public bool HasActiveTransaction => currentTransaction != null;
 
-        public ProjectDbContext(DbContextOptions<ProjectDbContext> options, IMediator mediator) : base(options)
+        public ProductDbContext(DbContextOptions<ProductDbContext> options, IMediator mediator) : base(options)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
-            System.Diagnostics.Debug.WriteLine("ProjectDbContext::ctor ->" + this.GetHashCode());
+            System.Diagnostics.Debug.WriteLine("ProductDbContext::ctor ->" + this.GetHashCode());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("myplanner-projects");
+            modelBuilder.HasDefaultSchema("myplanner-products");
 
-            modelBuilder.ApplyConfiguration(new ProjectEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new BacklogEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new TrackEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new StakeHolderEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new BudgetEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
 
             modelBuilder.UseIntegrationEventLogs();

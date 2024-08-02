@@ -1,6 +1,7 @@
 using MyPlanner.Projects.Api.Application.Endpoints;
 using MyPlanner.Projects.Api.Application.Extensions;
 using MyPlanner.Shared.Api;
+using MyPlanner.Shared.Api.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ app.MapDefaultEndpoints();
 var projects = app.NewVersionedApi("Projects");
 
 projects.MapProjectApiV1();
-         //.RequireAuthorization(); 
+//.RequireAuthorization(); 
 
 app.UseDefaultOpenApi();
 app.Run();

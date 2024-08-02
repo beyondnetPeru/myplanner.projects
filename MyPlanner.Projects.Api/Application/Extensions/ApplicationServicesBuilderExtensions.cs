@@ -4,12 +4,15 @@ using MyPlanner.IntegrationEventLogEF.Services;
 using MyPlanner.Projects.Api.Application.Services;
 using MyPlanner.Projects.Api.Application.UseCases.Queries;
 using MyPlanner.Projects.Domain;
-using MyPlanner.Projects.Infrastructure.Database;
-using MyPlanner.Projects.Infrastructure.Idempotency;
+using MyPlanner.Shared.Infrastructure.Database;
+using MyPlanner.Shared.Infrastructure.Idempotency;
 using MyPlanner.Projects.Infrastructure.Repositories;
 using MyPlanner.Shared.Application.Behaviors;
+using MyPlanner.Shared.Api.Application.Extensions;
+using MyPlanner.Projects.Api.Application.Extensions;
+using MyPlanner.Projects.Infrastructure.Database;
 
-namespace MyPlanner.Projects.Api.Application.Extensions
+namespace MyPlanner.Shared.Api.Application.Extensions
 {
     public static partial class ApplicationServicesBuilderExtensions
     {
@@ -27,7 +30,7 @@ namespace MyPlanner.Projects.Api.Application.Extensions
 
             // Add the integration services that consume the DbContext
             services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<ProjectDbContext>>();
-            
+
             services.AddTransient<IProjectIntegrationEventService, ProjectIntegrationEventService>();
 
             //builder.AddRabbitMqEventBus("eventbus")
@@ -53,7 +56,7 @@ namespace MyPlanner.Projects.Api.Application.Extensions
             services.AddScoped<IProjectRepository, ProjectRepository>();
 
             // Idempotency Service
-            services.AddScoped<IRequestManager, RequestManager>();
+            services.AddScoped<IRequestManager, Projects.Infrastructure.Idempotency.RequestManager>();
         }
 
         private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MyPlanner.Projects.Infrastructure.Idempotency;
+namespace MyPlanner.Shared.Infrastructure.Idempotency;
 
 public class ClientRequest
 {

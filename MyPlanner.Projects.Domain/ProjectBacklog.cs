@@ -2,6 +2,7 @@
 using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.Rules;
 using BeyondNet.Ddd.ValueObjects;
+using MyPlanner.Shared.Domain.ValueObjects;
 
 namespace MyPlanner.Projects.Domain
 {
@@ -17,7 +18,7 @@ namespace MyPlanner.Projects.Domain
         public ICollection<ProjectBackLogFeature> Features { get; set; } = new List<ProjectBackLogFeature>();
         public ProjectBacklogStatus Status { get; set; }
 
-        public ProjectBacklogProps(IdValueObject id,Project project, Name name)
+        public ProjectBacklogProps(IdValueObject id, Project project, Name name)
         {
             Id = id;
             Project = project;
@@ -29,8 +30,8 @@ namespace MyPlanner.Projects.Domain
             Status = ProjectBacklogStatus.NotStarted;
         }
 
-        public ProjectBacklogProps(IdValueObject id, IdValueObject projectId, Project project, Name name, 
-                                   Description description, DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate, 
+        public ProjectBacklogProps(IdValueObject id, IdValueObject projectId, Project project, Name name,
+                                   Description description, DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate,
                                    ICollection<ProjectBackLogFeature> features, ProjectBacklogStatus status)
         {
             Id = id;
@@ -70,9 +71,9 @@ namespace MyPlanner.Projects.Domain
         }
 
         public static ProjectBacklog Create(IdValueObject id, IdValueObject projectId, Project project, Name name,
-                                            Description description, 
+                                            Description description,
                                             DateTimeUtcValueObject startDate, DateTimeUtcValueObject endDate,
-                                            ICollection<ProjectBackLogFeature> features, 
+                                            ICollection<ProjectBackLogFeature> features,
                                             ProjectBacklogStatus status)
         {
             return new ProjectBacklog(new ProjectBacklogProps(id, projectId, project, name, description, startDate, endDate, features, status));

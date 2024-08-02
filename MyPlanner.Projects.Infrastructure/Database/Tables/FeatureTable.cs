@@ -1,4 +1,6 @@
-﻿namespace MyPlanner.Projects.Infrastructure.Database.Tables
+﻿using MyPlanner.Shared.Infrastructure.Database;
+
+namespace MyPlanner.Projects.Infrastructure.Database.Tables
 {
     public class FeatureTable
     {
@@ -19,7 +21,7 @@
     public enum ComplexityLevelEnum
     {
         Low,
-        Medium, 
+        Medium,
         High,
         VeryHigh
     }

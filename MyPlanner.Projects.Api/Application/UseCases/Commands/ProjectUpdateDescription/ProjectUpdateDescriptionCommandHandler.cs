@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MyPlanner.Projects.Domain;
+using MyPlanner.Shared.Domain.ValueObjects;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateDescription
 {

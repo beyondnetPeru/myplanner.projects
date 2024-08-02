@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BeyondNet.Ddd\BeyondNet.Ddd.csproj" />
+    <ProjectReference Include="..\MyPlanner.Shared\MyPlanner.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

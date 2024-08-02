@@ -4,8 +4,8 @@ using BeyondNet.Ddd.ValueObjects;
 using MyPlanner.Projects.Domain;
 using MyPlanner.Projects.Infrastructure.Database;
 using MyPlanner.Projects.Infrastructure.Database.Tables;
-using System.Collections.Generic;
-using System.Linq;
+using MyPlanner.Shared.Domain.ValueObjects;
+using MyPlanner.Shared.Infrastructure.Database;
 
 namespace MyPlanner.Projects.Infrastructure.Repositories
 {
@@ -13,13 +13,11 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
     {
         private readonly ProjectDbContext context;
 
-        private readonly IMapper mapper;
         public IUnitOfWork UnitOfWork => context;
 
-        public ProjectRepository(ProjectDbContext context, IMapper mapper)
+        public ProjectRepository(ProjectDbContext context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
-            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<ProjectTable> FindAsync(string id)
@@ -35,7 +33,7 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
         }
 
 
-        public ProjectTable TransformEntityToTable(Project project)
+        public ProjectTable TransFromEntityToTable(Project project)
         {
             var projectTable = new ProjectTable();
 
@@ -49,13 +47,13 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
                 CreatedBy = projectProps.Audit.GetValue().CreatedBy,
                 CreatedAt = projectProps.Audit.GetValue().CreatedAt,
             };
-             
+
             return projectTable;
         }
 
         public async Task Add(Project project)
         {
-            var projectTable = TransformEntityToTable(project);
+            var projectTable = TransFromEntityToTable(project);
 
             await this.context.AddAsync(projectTable);
         }
@@ -119,8 +117,8 @@ namespace MyPlanner.Projects.Infrastructure.Repositories
                 Description.Create(projectTable.Description!),
                 ProjectRiskLevel.From(projectTable.RiskLevel),
                 Owner.Create(projectTable.Owner!), null, null, null, null);
-            
-           
+
+
             project.AddStakeholder(LoadStakeHolders(projectTable, project));
             project.AddScope(LoadScopes(projectTable, project));
             project.AddTrack(LoadTracks(projectTable, project));

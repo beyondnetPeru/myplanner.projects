@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MyPlanner.Projects.Domain;
+using MyPlanner.Shared.Domain.ValueObjects;
 
 namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateName
 {
@@ -19,7 +20,7 @@ namespace MyPlanner.Projects.Api.Application.UseCases.Commands.ProjectUpdateName
             logger.LogInformation("Updating project name for project {ProjectId} to {Name}", request.ProjectId, request.Name);
 
             var project = await projectRepository.GetAsync(request.ProjectId);
-            
+
             if (project == null)
             {
                 logger.LogWarning("Project {ProjectId} not found", request.ProjectId);

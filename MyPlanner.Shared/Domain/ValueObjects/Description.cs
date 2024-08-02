@@ -1,6 +1,6 @@
 ﻿using BeyondNet.Ddd.ValueObjects;
 
-namespace MyPlanner.Projects.Domain
+namespace MyPlanner.Shared.Domain.ValueObjects
 {
     public class Description : StringValueObject
     {

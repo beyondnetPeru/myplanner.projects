@@ -2,7 +2,7 @@
 using MyPlanner.Shared.Helpers;
 
 
-namespace MyPlanner.Projects.Domain
+namespace MyPlanner.Shared.Domain.ValueObjects
 {
     public struct AuditProps
     {

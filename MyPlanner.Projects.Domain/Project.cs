@@ -2,6 +2,7 @@
 using BeyondNet.Ddd.Interfaces;
 using BeyondNet.Ddd.ValueObjects;
 using MyPlanner.Projects.Domain.DomainEvents;
+using MyPlanner.Shared.Domain.ValueObjects;
 
 namespace MyPlanner.Projects.Domain
 {
@@ -33,14 +34,14 @@ namespace MyPlanner.Projects.Domain
             Audit = Audit.Create("default");
         }
 
-        public ProjectProps(IdValueObject id, 
-                            Name name, 
-                            Product product, 
+        public ProjectProps(IdValueObject id,
+                            Name name,
+                            Product product,
                             Description description,
                             ProjectRiskLevel riskLevel,
                             Owner owner,
                             ICollection<ProjectBudget> budgets,
-                            ICollection<ProjectBacklog> backlogs, 
+                            ICollection<ProjectBacklog> backlogs,
                             ICollection<ProjectScope> scopes,
                             ICollection<ProjectStakeHolder> stakeHolders)
         {
@@ -101,14 +102,14 @@ namespace MyPlanner.Projects.Domain
             return new Project(new ProjectProps(id, name));
         }
 
-        public static Project Create(IdValueObject id, 
-                                     Name name, 
-                                     Product product, 
+        public static Project Create(IdValueObject id,
+                                     Name name,
+                                     Product product,
                                      Description description,
                                      ProjectRiskLevel riskLevel,
                                      Owner owner,
                                      ICollection<ProjectBudget> budgets,
-                                     ICollection<ProjectBacklog> backlogs, 
+                                     ICollection<ProjectBacklog> backlogs,
                                      ICollection<ProjectScope> scopes,
                                      ICollection<ProjectStakeHolder> stakeHolders)
         {

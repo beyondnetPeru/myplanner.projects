@@ -1,14 +1,15 @@
-﻿using MyPlanner.Projects.Domain;
-using MyPlanner.Projects.Infrastructure.Database;
+﻿
+using MyPlanner.Products.Domain;
+using MyPlanner.Products.Infrastructure.Database;
 using MyPlanner.Shared.Infrastructure.Idempotency;
 
-namespace MyPlanner.Projects.Infrastructure.Idempotency;
+namespace MyPlanner.Products.Infrastructure.Idempotency;
 
 public class RequestManager : IRequestManager
 {
-    private readonly ProjectDbContext _context;
+    private readonly ProductDbContext _context;
 
-    public RequestManager(ProjectDbContext context)
+    public RequestManager(ProductDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -27,7 +28,7 @@ public class RequestManager : IRequestManager
         var exists = await ExistAsync(id);
 
         var request = exists ?
-            throw new ProjectDomainException($"Request with {id} already exists") :
+            throw new ProductDomainException($"Request with {id} already exists") :
             new ClientRequest()
             {
                 Id = id,

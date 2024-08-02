@@ -1,4 +1,4 @@
-﻿namespace MyPlanner.Projects.Infrastructure.Idempotency;
+﻿namespace MyPlanner.Shared.Infrastructure.Idempotency;
 
 public interface IRequestManager
 {
